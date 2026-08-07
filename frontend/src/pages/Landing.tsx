@@ -10,33 +10,36 @@ import {
   ShieldAlert,
 } from "lucide-react";
 import { Button } from "../components/Button";
+import { useApp } from "../context/AppContext";
 
 const flowSteps = [
-  { icon: Radio, label: "Operator", desc: "Creates a SIM replacement request", color: "text-sky-400" },
-  { icon: FileCheck, label: "Identity Verification", desc: "Verifier validates the holder identity", color: "text-amber-400" },
-  { icon: UserCheck, label: "Holder Confirmation", desc: "Holder confirms or disputes the request", color: "text-sky-400" },
-  { icon: CheckCircle2, label: "Authorized", desc: "Replacement is authorized on-chain", color: "text-emerald-400" },
+  { icon: Radio, label: "Operador", desc: "Crea una solicitud de reposición de SIM", color: "text-sky-400" },
+  { icon: FileCheck, label: "Verificación de identidad", desc: "El verificador valida la identidad del titular", color: "text-amber-400" },
+  { icon: UserCheck, label: "Confirmación del titular", desc: "El titular confirma o disputa la solicitud", color: "text-sky-400" },
+  { icon: CheckCircle2, label: "Autorizada", desc: "La reposición se autoriza on-chain", color: "text-emerald-400" },
 ];
 
 const securityPoints = [
   {
     icon: Lock,
-    title: "On-chain audit trail",
-    desc: "Every step is recorded immutably, creating a tamper-proof history of each replacement.",
+    title: "Trazabilidad on-chain",
+    desc: "Cada paso queda registrado de forma inmutable, creando un historial a prueba de manipulaciones de cada reposición.",
   },
   {
     icon: ShieldAlert,
-    title: "Holder protection",
-    desc: "The holder has the final say. Unrecognized requests are blocked instantly.",
+    title: "Protección del titular",
+    desc: "El titular tiene la última palabra. Las solicitudes no reconocidas se bloquean al instante.",
   },
   {
     icon: Shield,
-    title: "Multi-party authorization",
-    desc: "Operator, verifier, and holder must all agree before a SIM is replaced.",
+    title: "Autorización multipartita",
+    desc: "Operador, verificador y titular deben coincidir antes de reemplazar un SIM.",
   },
 ];
 
 export function Landing() {
+  const { walletConnected, connectWallet } = useApp();
+
   return (
     <div className="mx-auto max-w-7xl px-4 sm:px-6">
       {/* Hero */}
@@ -45,30 +48,31 @@ export function Landing() {
           <div className="animate-fade-in">
             <div className="mb-4 inline-flex items-center gap-2 rounded-full border border-sky-500/30 bg-sky-500/10 px-3 py-1 text-xs font-semibold text-sky-300">
               <Shield className="h-3.5 w-3.5" />
-              Blockchain-secured telecom
+              Telecomunicaciones aseguradas con blockchain
             </div>
             <h1 className="text-4xl font-bold leading-tight tracking-tight text-white sm:text-5xl lg:text-6xl">
-              Secure SIM{" "}
+              Reposiciones de SIM{" "}
               <span className="bg-gradient-to-r from-sky-400 to-sky-500 bg-clip-text text-transparent">
-                replacement
+                más seguras
               </span>{" "}
-              with on-chain authorization
+              con autorización verificable
             </h1>
             <p className="mt-5 max-w-lg text-base text-navy-200 sm:text-lg">
-              SIMI adds a blockchain layer of authorization and audit to SIM
-              card replacements — protecting holders from fraud through
-              multi-party verification.
+              SIMI agrega una capa de autorización y auditoría basada en
+              blockchain para reducir el riesgo de reposiciones de SIM no
+              autorizadas.
             </p>
             <div className="mt-8 flex flex-wrap gap-3">
-              <Link to="/dashboard">
-                <Button size="lg">
-                  Connect Wallet
-                  <ArrowRight className="h-5 w-5" />
-                </Button>
-              </Link>
+              <Button
+                size="lg"
+                onClick={() => !walletConnected && connectWallet()}
+              >
+                Conectar Wallet
+                <ArrowRight className="h-5 w-5" />
+              </Button>
               <Link to="/holder">
                 <Button size="lg" variant="outline">
-                  See how it works
+                  Cómo funciona
                 </Button>
               </Link>
             </div>
@@ -79,7 +83,7 @@ export function Landing() {
             <img
               src="/assets/simi/hero/simi-hero.png"
               alt="SIMI hero"
-              className="mx-auto w-full max-w-md object-contain drop-shadow-2xl"
+              className="mx-auto w-full max-w-2xl object-contain drop-shadow-2xl"
             />
           </div>
         </div>
@@ -89,11 +93,11 @@ export function Landing() {
       <section className="py-12 sm:py-16">
         <div className="mb-10 text-center">
           <h2 className="text-2xl font-bold text-white sm:text-3xl">
-            How SIMI works
+            Cómo funciona SIMI
           </h2>
           <p className="mt-2 text-navy-300">
-            A four-step authorization flow ensures no SIM is replaced without
-            every party's consent.
+            Un flujo de autorización de cuatro pasos garantiza que ningún SIM se
+            reemplace sin el consentimiento de todas las partes.
           </p>
         </div>
         <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
@@ -124,11 +128,11 @@ export function Landing() {
       <section className="py-12 sm:py-16">
         <div className="mb-10 text-center">
           <h2 className="text-2xl font-bold text-white sm:text-3xl">
-            Why SIMI matters
+            Por qué SIMI importa
           </h2>
           <p className="mt-2 text-navy-300">
-            SIM swap fraud is a growing threat. SIMI makes every replacement
-            verifiable and revocable.
+            El fraude de SIM swap es una amenaza creciente. SIMI hace que cada
+            reposición sea verificable y revocable.
           </p>
         </div>
         <div className="grid gap-4 sm:grid-cols-3">
@@ -157,15 +161,15 @@ export function Landing() {
             className="mx-auto mb-4 h-24 w-24 object-contain drop-shadow-lg"
           />
           <h2 className="text-2xl font-bold text-white sm:text-3xl">
-            Ready to explore SIMI?
+            ¿Listo para explorar SIMI?
           </h2>
           <p className="mx-auto mt-2 max-w-md text-navy-300">
-            Navigate the demo dashboards to see the full authorization flow in
-            action.
+            Navega los dashboards de demostración para ver el flujo completo de
+            autorización en acción.
           </p>
           <Link to="/dashboard" className="mt-6 inline-block">
             <Button size="lg">
-              Go to Dashboard
+              Ir al Dashboard
               <ArrowRight className="h-5 w-5" />
             </Button>
           </Link>

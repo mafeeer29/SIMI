@@ -12,7 +12,7 @@ export function abbreviateWallet(wallet: string): string {
 
 export function formatDate(iso: string): string {
   const d = new Date(iso);
-  return d.toLocaleDateString("en-US", {
+  return d.toLocaleDateString("es-ES", {
     year: "numeric",
     month: "short",
     day: "numeric",
@@ -23,13 +23,13 @@ export function formatDate(iso: string): string {
 
 export function buildTimeline(req: SimRequest): TimelineStep[] {
   const steps: TimelineStep[] = [
-    { label: "Request Created", state: "completed" },
+    { label: "Solicitud creada", state: "completed" },
     {
-      label: "Identity Verified",
+      label: "Identidad verificada",
       state: req.identityVerified ? "completed" : "current",
     },
     {
-      label: "Holder Confirmation",
+      label: "Confirmación del titular",
       state: req.holderConfirmed
         ? "completed"
         : req.identityVerified && !req.disputed
@@ -37,7 +37,7 @@ export function buildTimeline(req: SimRequest): TimelineStep[] {
         : "pending",
     },
     {
-      label: req.disputed ? "Disputed / Blocked" : "Authorized",
+      label: req.disputed ? "Disputada / Bloqueada" : "Autorización final",
       state: req.disputed
         ? "completed"
         : req.holderConfirmed
@@ -48,7 +48,7 @@ export function buildTimeline(req: SimRequest): TimelineStep[] {
 
   if (req.disputed) {
     steps[2].state = "completed";
-    steps[2].label = "Disputed";
+    steps[2].label = "Disputada";
   }
 
   return steps;

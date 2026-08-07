@@ -8,6 +8,8 @@ import {
 import type { Role, SimRequest } from "../types/request";
 import { mockRequests } from "../data/mockRequests";
 
+const MOCK_WALLET = "0x71F3…8AC2";
+
 interface AppContextValue {
   role: Role;
   setRole: (r: Role) => void;
@@ -15,6 +17,10 @@ interface AppContextValue {
   addRequest: (lineId: string, holder: string) => void;
   updateRequest: (id: number, patch: Partial<SimRequest>) => void;
   getRequest: (id: number) => SimRequest | undefined;
+  walletConnected: boolean;
+  walletAddress: string;
+  connectWallet: () => void;
+  disconnectWallet: () => void;
 }
 
 const AppContext = createContext<AppContextValue | null>(null);
@@ -22,6 +28,7 @@ const AppContext = createContext<AppContextValue | null>(null);
 export function AppProvider({ children }: { children: ReactNode }) {
   const [role, setRole] = useState<Role>("Operator");
   const [requests, setRequests] = useState<SimRequest[]>(mockRequests);
+  const [walletConnected, setWalletConnected] = useState(true);
 
   const value = useMemo<AppContextValue>(() => {
     const addRequest = (lineId: string, holder: string) => {
@@ -50,8 +57,19 @@ export function AppProvider({ children }: { children: ReactNode }) {
 
     const getRequest = (id: number) => requests.find((r) => r.id === id);
 
-    return { role, setRole, requests, addRequest, updateRequest, getRequest };
-  }, [role, requests]);
+    return {
+      role,
+      setRole,
+      requests,
+      addRequest,
+      updateRequest,
+      getRequest,
+      walletConnected,
+      walletAddress: MOCK_WALLET,
+      connectWallet: () => setWalletConnected(true),
+      disconnectWallet: () => setWalletConnected(false),
+    };
+  }, [role, requests, walletConnected]);
 
   return <AppContext.Provider value={value}>{children}</AppContext.Provider>;
 }

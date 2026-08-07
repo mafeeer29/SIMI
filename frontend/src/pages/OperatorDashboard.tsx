@@ -27,13 +27,13 @@ export function OperatorDashboard() {
   return (
     <div className="mx-auto max-w-7xl px-4 py-8 sm:px-6">
       <DashboardHeader
-        title="SIM Replacement Requests"
-        subtitle="As an operator, you can create new SIM replacement requests."
+        title="Solicitudes de reposición de SIM"
+        subtitle="Crea y supervisa solicitudes de reposición registradas por el operador."
         role="Operator"
         actions={
           <Button onClick={() => setShowModal(true)}>
             <Plus className="h-4 w-4" />
-            New Request
+            Nueva solicitud
           </Button>
         }
       />
@@ -41,7 +41,7 @@ export function OperatorDashboard() {
       {justCreated && (
         <div className="mb-4 flex items-center gap-2 rounded-xl border border-emerald-500/30 bg-emerald-500/10 px-4 py-3 text-sm text-emerald-300 animate-fade-in">
           <CheckCircle2 className="h-4 w-4" />
-          Request #{justCreated} created successfully.
+          Solicitud #{justCreated} creada correctamente.
         </div>
       )}
 
@@ -54,7 +54,9 @@ export function OperatorDashboard() {
       {requests.length === 0 && (
         <div className="card p-12 text-center">
           <Radio className="mx-auto mb-3 h-10 w-10 text-navy-500" />
-          <p className="text-navy-300">No requests yet. Create one to get started.</p>
+          <p className="text-navy-300">
+            Aún no hay solicitudes. Crea una para comenzar.
+          </p>
         </div>
       )}
 
@@ -70,7 +72,7 @@ export function OperatorDashboard() {
           >
             <div className="mb-5 flex items-center justify-between">
               <h2 className="text-lg font-bold text-navy-900">
-                New SIM Replacement Request
+                Nueva solicitud de reposición
               </h2>
               <button
                 onClick={() => setShowModal(false)}
@@ -94,7 +96,7 @@ export function OperatorDashboard() {
               </div>
               <div>
                 <label className="mb-1.5 block text-sm font-semibold text-navy-700">
-                  Holder Wallet
+                  Wallet del titular
                 </label>
                 <input
                   className="input font-mono"
@@ -111,10 +113,10 @@ export function OperatorDashboard() {
                   className="flex-1 border-navy-200 text-navy-700 hover:bg-navy-50"
                   onClick={() => setShowModal(false)}
                 >
-                  Cancel
+                  Cancelar
                 </Button>
                 <Button type="submit" className="flex-1">
-                  Create Request
+                  Crear solicitud
                 </Button>
               </div>
             </form>

@@ -36,8 +36,8 @@ export function VerifierDashboard() {
   return (
     <div className="mx-auto max-w-7xl px-4 py-8 sm:px-6">
       <DashboardHeader
-        title="Identity Verification"
-        subtitle="Review and verify the identity of SIM replacement request holders."
+        title="Verificación de identidad"
+        subtitle="Revisa y verifica la identidad de los titulares de solicitudes de reposición."
         role="Verifier"
       />
 
@@ -45,7 +45,7 @@ export function VerifierDashboard() {
         {/* Pending list */}
         <div>
           <h2 className="mb-4 text-lg font-semibold text-white">
-            Pending verification ({pending.length})
+            Pendientes de verificación ({pending.length})
           </h2>
           <div className="space-y-3">
             {pending.map((req) => (
@@ -72,7 +72,7 @@ export function VerifierDashboard() {
                     {abbreviateLineId(req.lineId)}
                   </p>
                   <p className="text-xs text-navy-300">
-                    Holder: {abbreviateWallet(req.holder)}
+                    Titular: {abbreviateWallet(req.holder)}
                   </p>
                   <p className="text-xs text-navy-400">
                     {formatDate(req.createdAt)}
@@ -84,7 +84,7 @@ export function VerifierDashboard() {
               <div className="card p-8 text-center">
                 <CheckCircle2 className="mx-auto mb-2 h-8 w-8 text-emerald-400" />
                 <p className="text-sm text-navy-300">
-                  No pending verifications. All caught up.
+                  No hay verificaciones pendientes. Todo al día.
                 </p>
               </div>
             )}
@@ -94,13 +94,14 @@ export function VerifierDashboard() {
         {/* Verification panel */}
         <div>
           <h2 className="mb-4 text-lg font-semibold text-white">
-            Identity Verification
+            Verificación de identidad
           </h2>
           {!selected ? (
             <div className="card flex flex-col items-center p-10 text-center">
               <StateIllustration state="pending" className="mb-4" />
               <p className="text-sm text-navy-300">
-                Select a pending request to begin identity verification.
+                Selecciona una solicitud pendiente para iniciar la verificación
+                de identidad.
               </p>
             </div>
           ) : done === selected.id ? (
@@ -109,10 +110,11 @@ export function VerifierDashboard() {
                 <CheckCircle2 className="h-8 w-8 text-emerald-400" />
               </div>
               <h3 className="text-lg font-bold text-white">
-                Identity verification completed successfully
+                Identidad verificada correctamente
               </h3>
               <p className="mt-1 text-sm text-navy-300">
-                Request #{selected.id} has been marked as identity verified.
+                La solicitud #{selected.id} ha sido marcada como identidad
+                verificada.
               </p>
             </div>
           ) : (
@@ -121,7 +123,7 @@ export function VerifierDashboard() {
               <div className="mb-6 space-y-3">
                 <div className="flex items-center justify-between">
                   <span className="text-xs font-mono text-navy-400">
-                    Request #{selected.id}
+                    Request ID #{selected.id}
                   </span>
                   <StatusBadge status={selected.status} />
                 </div>
@@ -133,17 +135,17 @@ export function VerifierDashboard() {
                     </p>
                   </div>
                   <div>
-                    <p className="text-xs text-navy-400">Operator</p>
+                    <p className="text-xs text-navy-400">Operador</p>
                     <p className="font-mono text-white">{selected.operator}</p>
                   </div>
                   <div>
-                    <p className="text-xs text-navy-400">Holder</p>
+                    <p className="text-xs text-navy-400">Titular</p>
                     <p className="font-mono text-white">
                       {abbreviateWallet(selected.holder)}
                     </p>
                   </div>
                   <div>
-                    <p className="text-xs text-navy-400">Created</p>
+                    <p className="text-xs text-navy-400">Fecha</p>
                     <p className="text-white">
                       {formatDate(selected.createdAt)}
                     </p>
@@ -151,19 +153,19 @@ export function VerifierDashboard() {
                 </div>
               </div>
 
-              {/* Verification block */}
+              {/* Validación externa */}
               <div className="rounded-xl border border-navy-700 bg-navy-950/50 p-5">
                 <div className="mb-3 flex items-center gap-2">
                   <FileCheck className="h-5 w-5 text-amber-400" />
                   <span className="text-sm font-semibold text-white">
-                    Verification check
+                    Validación externa
                   </span>
                 </div>
                 <div className="space-y-2">
                   {[
-                    "Document authenticity validated",
-                    "Biometric match confirmed",
-                    "Holder KYC record verified",
+                    "Autenticidad del documento validada",
+                    "Coincidencia biométrica confirmada",
+                    "Registro KYC del titular verificado",
                   ].map((check) => (
                     <div
                       key={check}
@@ -175,7 +177,7 @@ export function VerifierDashboard() {
                   ))}
                 </div>
                 <div className="mt-4 rounded-lg bg-emerald-500/10 px-3 py-2 text-sm text-emerald-300">
-                  Identity verification completed successfully
+                  Identidad verificada correctamente
                 </div>
               </div>
 
@@ -186,7 +188,7 @@ export function VerifierDashboard() {
                 disabled={verifying}
               >
                 <ShieldCheck className="h-5 w-5" />
-                {verifying ? "Recording…" : "Record Verification"}
+                {verifying ? "Registrando…" : "Registrar verificación"}
               </Button>
             </div>
           )}

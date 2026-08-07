@@ -12,6 +12,12 @@ import { useApp } from "../context/AppContext";
 import { DashboardHeader } from "../components/DashboardHeader";
 import { RequestCard } from "../components/RequestCard";
 
+const roleLabels: Record<Role, string> = {
+  Operator: "Operador",
+  Verifier: "Verificador",
+  Holder: "Titular",
+};
+
 const roles: { value: Role; icon: typeof Radio }[] = [
   { value: "Operator", icon: Radio },
   { value: "Verifier", icon: ShieldCheck },
@@ -34,17 +40,17 @@ export function GeneralDashboard() {
   const disputed = requests.filter((r) => r.status === "Disputed").length;
 
   const stats = [
-    { label: "Active Requests", value: active, icon: FileText, color: "text-sky-400", bg: "bg-sky-500/10" },
-    { label: "Authorized", value: authorized, icon: CheckCircle2, color: "text-emerald-400", bg: "bg-emerald-500/10" },
-    { label: "Pending", value: pending, icon: Clock, color: "text-amber-400", bg: "bg-amber-500/10" },
-    { label: "Disputed", value: disputed, icon: AlertTriangle, color: "text-rose-400", bg: "bg-rose-500/10" },
+    { label: "Solicitudes activas", value: active, icon: FileText, color: "text-sky-400", bg: "bg-sky-500/10" },
+    { label: "Autorizadas", value: authorized, icon: CheckCircle2, color: "text-emerald-400", bg: "bg-emerald-500/10" },
+    { label: "Pendientes", value: pending, icon: Clock, color: "text-amber-400", bg: "bg-amber-500/10" },
+    { label: "Disputadas", value: disputed, icon: AlertTriangle, color: "text-rose-400", bg: "bg-rose-500/10" },
   ];
 
   return (
     <div className="mx-auto max-w-7xl px-4 py-8 sm:px-6">
       <DashboardHeader
         title="Dashboard"
-        subtitle="Overview of all SIM replacement requests"
+        subtitle="Resumen de todas las solicitudes de reposición de SIM"
         role={role}
         actions={
           <div className="flex items-center gap-1 rounded-xl border border-white/10 bg-navy-900/70 p-1">
@@ -61,7 +67,7 @@ export function GeneralDashboard() {
                   }`}
                 >
                   <Icon className="h-3.5 w-3.5" />
-                  {r.value}
+                  {roleLabels[r.value]}
                 </button>
               );
             })}
@@ -88,7 +94,7 @@ export function GeneralDashboard() {
       {/* Recent requests */}
       <div>
         <h2 className="mb-4 text-lg font-semibold text-white">
-          Recent requests
+          Solicitudes recientes
         </h2>
         <div className="grid gap-3 sm:grid-cols-2">
           {requests.map((req) => (

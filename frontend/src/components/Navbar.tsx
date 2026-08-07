@@ -1,19 +1,36 @@
 import { useState } from "react";
 import { Link, useLocation } from "react-router-dom";
-import { Menu, X, Shield } from "lucide-react";
+import { Menu, X, Shield, Wallet } from "lucide-react";
 import { Button } from "./Button";
+import { useApp } from "../context/AppContext";
 
 const links = [
-  { to: "/", label: "Home" },
+  { to: "/", label: "Inicio" },
   { to: "/dashboard", label: "Dashboard" },
-  { to: "/operator", label: "Operator" },
-  { to: "/verifier", label: "Verifier" },
-  { to: "/holder", label: "Holder" },
+  { to: "/operator", label: "Operador" },
+  { to: "/verifier", label: "Verificador" },
+  { to: "/holder", label: "Titular" },
 ];
 
 export function Navbar() {
   const [open, setOpen] = useState(false);
   const location = useLocation();
+  const { walletConnected, walletAddress, connectWallet, disconnectWallet } = useApp();
+
+  const walletButton = walletConnected ? (
+    <button
+      onClick={disconnectWallet}
+      className="inline-flex items-center gap-2 rounded-xl border border-white/10 bg-navy-900/70 px-3 py-2 text-sm font-mono text-navy-200 transition hover:bg-navy-800"
+    >
+      <Wallet className="h-4 w-4 text-sky-400" />
+      {walletAddress}
+    </button>
+  ) : (
+    <Button size="sm" onClick={connectWallet}>
+      <Shield className="h-4 w-4" />
+      Conectar Wallet
+    </Button>
+  );
 
   return (
     <header className="sticky top-0 z-50 border-b border-white/10 bg-navy-950/80 backdrop-blur-lg">
@@ -43,10 +60,7 @@ export function Navbar() {
               {l.label}
             </Link>
           ))}
-          <Button size="sm" className="ml-3">
-            <Shield className="h-4 w-4" />
-            Connect Wallet
-          </Button>
+          <div className="ml-3">{walletButton}</div>
         </div>
 
         <button
@@ -75,10 +89,7 @@ export function Navbar() {
                 {l.label}
               </Link>
             ))}
-            <Button size="md" className="mt-2">
-              <Shield className="h-4 w-4" />
-              Connect Wallet
-            </Button>
+            <div className="mt-2">{walletButton}</div>
           </div>
         </div>
       )}

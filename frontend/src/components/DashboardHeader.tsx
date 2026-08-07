@@ -2,11 +2,11 @@ import type { ReactNode } from "react";
 import { Wallet } from "lucide-react";
 import type { Role } from "../types/request";
 import { RoleBadge } from "./RoleBadge";
+import { useApp } from "../context/AppContext";
 
 interface DashboardHeaderProps {
   title: string;
   subtitle?: string;
-  wallet?: string;
   role?: Role;
   actions?: ReactNode;
 }
@@ -14,10 +14,10 @@ interface DashboardHeaderProps {
 export function DashboardHeader({
   title,
   subtitle,
-  wallet = "0x71F3…8AC2",
   role = "Operator",
   actions,
 }: DashboardHeaderProps) {
+  const { walletConnected, walletAddress } = useApp();
   return (
     <div className="mb-6 flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
       <div>
@@ -26,10 +26,12 @@ export function DashboardHeader({
       </div>
       <div className="flex flex-wrap items-center gap-3">
         {actions}
-        <div className="flex items-center gap-2 rounded-xl border border-white/10 bg-navy-900/70 px-3 py-2">
-          <Wallet className="h-4 w-4 text-sky-400" />
-          <span className="font-mono text-sm text-navy-200">{wallet}</span>
-        </div>
+        {walletConnected && (
+          <div className="flex items-center gap-2 rounded-xl border border-white/10 bg-navy-900/70 px-3 py-2">
+            <Wallet className="h-4 w-4 text-sky-400" />
+            <span className="font-mono text-sm text-navy-200">{walletAddress}</span>
+          </div>
+        )}
         <RoleBadge role={role} />
       </div>
     </div>

@@ -1,12 +1,18 @@
 import { Check, Lock, X } from "lucide-react";
 import type { TimelineStep } from "../types/request";
 
+const stateLabels: Record<TimelineStep["state"], string> = {
+  completed: "Completado",
+  current: "En progreso",
+  pending: "En espera",
+};
+
 export function Timeline({ steps }: { steps: TimelineStep[] }) {
   return (
     <div className="flex flex-col gap-0">
       {steps.map((step, i) => {
         const isLast = i === steps.length - 1;
-        const isDisputed = step.label.includes("Disputed") || step.label.includes("Blocked");
+        const isDisputed = step.label.includes("Disputada") || step.label.includes("Bloqueada");
         return (
           <div key={i} className="flex gap-3">
             <div className="flex flex-col items-center">
@@ -55,13 +61,7 @@ export function Timeline({ steps }: { steps: TimelineStep[] }) {
               >
                 {step.label}
               </p>
-              <p className="text-xs text-navy-400">
-                {step.state === "completed"
-                  ? "Completed"
-                  : step.state === "current"
-                  ? "In progress"
-                  : "Waiting"}
-              </p>
+              <p className="text-xs text-navy-400">{stateLabels[step.state]}</p>
             </div>
           </div>
         );

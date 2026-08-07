@@ -61,8 +61,8 @@ export function HolderDashboard() {
     return (
       <div className="mx-auto max-w-7xl px-4 py-8 sm:px-6">
         <DashboardHeader
-          title="Holder Dashboard"
-          subtitle="Review SIM replacement requests linked to your wallet."
+          title="Panel del titular"
+          subtitle="Revisa las solicitudes de reposición de SIM vinculadas a tu wallet."
           role="Holder"
         />
         <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
@@ -94,12 +94,12 @@ export function HolderDashboard() {
     return (
       <div className="mx-auto max-w-2xl px-4 py-8 sm:px-6">
         <DashboardHeader
-          title="Holder Dashboard"
+          title="Panel del titular"
           role="Holder"
           actions={
             <Button variant="ghost" size="sm" onClick={reset}>
               <ArrowLeft className="h-4 w-4" />
-              Back
+              Volver
             </Button>
           }
         />
@@ -108,15 +108,16 @@ export function HolderDashboard() {
           <div className="mb-4 flex items-center gap-2 rounded-full border border-emerald-500/30 bg-emerald-500/10 px-4 py-1.5">
             <CheckCircle2 className="h-4 w-4 text-emerald-400" />
             <span className="text-sm font-semibold text-emerald-300">
-              Authorized
+              Autorizada
             </span>
           </div>
           <h2 className="text-2xl font-bold text-white sm:text-3xl">
-            SIM Replacement Authorized
+            Reposición autorizada
           </h2>
           <p className="mt-3 max-w-md text-navy-300">
-            You confirmed this request. The SIM replacement has been authorized
-            and recorded on-chain. Request #{selected.id} is now complete.
+            Confirmaste esta solicitud. Se cumplieron todas las condiciones
+            requeridas y la reposición de SIM quedó autorizada y registrada
+            on-chain. La solicitud #{selected.id} está completa.
           </p>
           <div className="mt-6 w-full max-w-sm rounded-xl border border-navy-700 bg-navy-950/50 p-4 text-left">
             <div className="space-y-2 text-sm">
@@ -131,13 +132,13 @@ export function HolderDashboard() {
                 </span>
               </div>
               <div className="flex justify-between">
-                <span className="text-navy-400">Status</span>
+                <span className="text-navy-400">Estado</span>
                 <StatusBadge status={selected.status} />
               </div>
             </div>
           </div>
           <Button className="mt-6" size="lg" onClick={reset}>
-            Back to requests
+            Volver a las solicitudes
           </Button>
         </div>
       </div>
@@ -149,12 +150,12 @@ export function HolderDashboard() {
     return (
       <div className="mx-auto max-w-2xl px-4 py-8 sm:px-6">
         <DashboardHeader
-          title="Holder Dashboard"
+          title="Panel del titular"
           role="Holder"
           actions={
             <Button variant="ghost" size="sm" onClick={reset}>
               <ArrowLeft className="h-4 w-4" />
-              Back
+              Volver
             </Button>
           }
         />
@@ -164,19 +165,20 @@ export function HolderDashboard() {
           <div className="mb-4 flex items-center gap-2 rounded-full border border-rose-500/30 bg-rose-500/10 px-4 py-1.5">
             <ShieldAlert className="h-4 w-4 text-rose-400" />
             <span className="text-sm font-semibold text-rose-300">
-              Security Alert
+              Alerta de seguridad
             </span>
           </div>
           <h2 className="text-2xl font-bold text-white sm:text-3xl">
-            SIM Replacement Blocked
+            Reposición bloqueada
           </h2>
           <p className="mt-3 max-w-md text-navy-300">
-            You did not recognize this request. SIMI has blocked the replacement
-            and flagged it as disputed. Your SIM remains safe.
+            No reconociste esta solicitud. La solicitud fue disputada por el
+            titular, por lo que SIMI bloqueó la reposición y la marcó como
+            disputada. Tu SIM permanece segura.
           </p>
           <div className="mt-4 flex items-center gap-2 rounded-xl border border-rose-500/20 bg-rose-500/5 px-4 py-3 text-sm text-rose-200">
             <ShieldCheck className="h-5 w-5 shrink-0 text-rose-400" />
-            SIMI protected your account from a potentially fraudulent SIM swap.
+            SIMI protegió tu cuenta de una posible reposición fraudulenta.
           </div>
           <div className="mt-6 w-full max-w-sm rounded-xl border border-navy-700 bg-navy-950/50 p-4 text-left">
             <div className="space-y-2 text-sm">
@@ -191,13 +193,13 @@ export function HolderDashboard() {
                 </span>
               </div>
               <div className="flex justify-between">
-                <span className="text-navy-400">Status</span>
+                <span className="text-navy-400">Estado</span>
                 <StatusBadge status={selected.status} />
               </div>
             </div>
           </div>
           <Button className="mt-6" size="lg" variant="danger" onClick={reset}>
-            Back to requests
+            Volver a las solicitudes
           </Button>
         </div>
       </div>
@@ -215,12 +217,12 @@ export function HolderDashboard() {
   return (
     <div className="mx-auto max-w-2xl px-4 py-8 sm:px-6">
       <DashboardHeader
-        title="Holder Dashboard"
+        title="Panel del titular"
         role="Holder"
         actions={
           <Button variant="ghost" size="sm" onClick={reset}>
             <ArrowLeft className="h-4 w-4" />
-            Back
+            Volver
           </Button>
         }
       />
@@ -232,7 +234,7 @@ export function HolderDashboard() {
           <div className="flex items-center gap-2 rounded-full border border-amber-500/30 bg-amber-500/10 px-4 py-1.5">
             <Clock className="h-4 w-4 text-amber-400" />
             <span className="text-sm font-semibold text-amber-300">
-              Pending — awaiting steps
+              Pendiente — pasos en espera
             </span>
           </div>
         </div>
@@ -245,7 +247,7 @@ export function HolderDashboard() {
             <ShieldAlert className="h-5 w-5 text-sky-400" />
           </div>
           <h2 className="text-lg font-bold text-white">
-            SIM replacement request detected
+            Solicitud de reposición detectada
           </h2>
         </div>
 
@@ -262,31 +264,31 @@ export function HolderDashboard() {
             </p>
           </div>
           <div>
-            <p className="text-xs text-navy-400">Operator</p>
+            <p className="text-xs text-navy-400">Operador</p>
             <p className="font-mono text-sm text-white">{selected.operator}</p>
           </div>
           <div>
-            <p className="text-xs text-navy-400">Holder</p>
+            <p className="text-xs text-navy-400">Titular</p>
             <p className="font-mono text-sm text-white">
               {abbreviateWallet(selected.holder)}
             </p>
           </div>
           <div>
-            <p className="text-xs text-navy-400">Created</p>
+            <p className="text-xs text-navy-400">Fecha</p>
             <p className="text-sm text-white">{formatDate(selected.createdAt)}</p>
           </div>
           <div>
-            <p className="text-xs text-navy-400">Identity verified</p>
+            <p className="text-xs text-navy-400">Identidad verificada</p>
             <p className="flex items-center gap-1 text-sm">
               {selected.identityVerified ? (
                 <>
                   <CheckCircle2 className="h-4 w-4 text-emerald-400" />
-                  <span className="text-emerald-300">Yes</span>
+                  <span className="text-emerald-300">Sí</span>
                 </>
               ) : (
                 <>
                   <Clock className="h-4 w-4 text-amber-400" />
-                  <span className="text-amber-300">Pending</span>
+                  <span className="text-amber-300">Pendiente</span>
                 </>
               )}
             </p>
@@ -296,7 +298,7 @@ export function HolderDashboard() {
         {/* Timeline */}
         <div className="mt-6 rounded-xl border border-navy-700 bg-navy-950/30 p-5">
           <p className="mb-4 text-sm font-semibold text-white">
-            Process progress
+            Progreso del proceso
           </p>
           <Timeline steps={timeline} />
         </div>
@@ -306,7 +308,7 @@ export function HolderDashboard() {
           <div className="mt-6">
             <div className="mb-4 rounded-xl border border-sky-500/20 bg-sky-500/5 p-4">
               <p className="text-center text-base font-semibold text-white">
-                Do you recognize this SIM replacement request?
+                ¿Reconoces esta solicitud?
               </p>
             </div>
             <div className="flex flex-col gap-3 sm:flex-row">
@@ -317,7 +319,7 @@ export function HolderDashboard() {
                 onClick={handleConfirm}
               >
                 <CheckCircle2 className="h-5 w-5" />
-                Yes, confirm
+                Sí, confirmar
               </Button>
               <Button
                 variant="danger"
@@ -326,15 +328,15 @@ export function HolderDashboard() {
                 onClick={handleDispute}
               >
                 <XCircle className="h-5 w-5" />
-                I don't recognize this
+                No reconozco esta solicitud
               </Button>
             </div>
           </div>
         ) : !selected.identityVerified && !selected.disputed ? (
           <div className="mt-6 flex items-center gap-2 rounded-xl border border-amber-500/20 bg-amber-500/5 p-4 text-sm text-amber-200">
             <AlertTriangle className="h-5 w-5 shrink-0 text-amber-400" />
-            Identity verification must be completed before you can confirm or
-            dispute this request.
+            La verificación de identidad debe completarse antes de que puedas
+            confirmar o disputar esta solicitud.
           </div>
         ) : null}
       </div>

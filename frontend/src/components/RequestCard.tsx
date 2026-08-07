@@ -18,7 +18,7 @@ export function RequestCard({ req }: { req: SimRequest }) {
             </span>
           </div>
           <div className="mt-1.5 flex flex-wrap gap-x-4 gap-y-1 text-xs text-navy-300">
-            <span>Holder: {abbreviateWallet(req.holder)}</span>
+            <span>Titular: {abbreviateWallet(req.holder)}</span>
             <span>{formatDate(req.createdAt)}</span>
           </div>
         </div>

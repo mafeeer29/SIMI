@@ -1,13 +1,17 @@
-import { Link } from "react-router-dom";
 import type { SimRequest } from "../types/request";
 import { StatusBadge } from "./StatusBadge";
 import { abbreviateLineId, abbreviateWallet, formatDate } from "../utils/format";
 
-export function RequestCard({ req }: { req: SimRequest }) {
+interface RequestCardProps {
+  req: SimRequest;
+  onClick?: (id: number) => void;
+}
+
+export function RequestCard({ req, onClick }: RequestCardProps) {
   return (
-    <Link
-      to="/holder"
-      className="card group block p-4 transition hover:border-sky-500/40 hover:bg-navy-900/90 animate-fade-in"
+    <button
+      onClick={() => onClick?.(req.id)}
+      className="card group block w-full p-4 text-left transition hover:border-sky-500/40 hover:bg-navy-900/90 animate-fade-in"
     >
       <div className="flex items-start justify-between gap-3">
         <div className="min-w-0">
@@ -24,6 +28,6 @@ export function RequestCard({ req }: { req: SimRequest }) {
         </div>
         <StatusBadge status={req.status} />
       </div>
-    </Link>
+    </button>
   );
 }

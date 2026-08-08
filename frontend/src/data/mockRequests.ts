@@ -57,3 +57,9 @@ export const mockRequests: SimRequest[] = [
     status: "IdentityVerified",
   },
 ];
+
+export const mockWallets: Record<string, { role: "Operator" | "Verifier" | "Holder"; address: string }> = {
+  "0x71F3…8AC2": { role: "Operator", address: "0x71F3…8AC2" },
+  "0x4D8e…1B3c": { role: "Verifier", address: "0x4D8e…1B3c" },
+  "0x9B2c…44E1": { role: "Holder", address: "0x9B2c…44E1" },
+};

@@ -6,7 +6,7 @@ import { Button } from "../components/Button";
 import { RequestCard } from "../components/RequestCard";
 
 export function OperatorDashboard() {
-  const { requests, addRequest } = useApp();
+  const { role, requests, addRequest } = useApp();
   const [showModal, setShowModal] = useState(false);
   const [lineId, setLineId] = useState("");
   const [holder, setHolder] = useState("");
@@ -16,7 +16,7 @@ export function OperatorDashboard() {
     e.preventDefault();
     if (!lineId.trim() || !holder.trim()) return;
     const nextId = Math.max(0, ...requests.map((r) => r.id)) + 1;
-    addRequest(lineId.trim(), holder.trim());
+    addRequest({ lineId: lineId.trim(), holder: holder.trim() });
     setJustCreated(nextId);
     setLineId("");
     setHolder("");
@@ -29,7 +29,7 @@ export function OperatorDashboard() {
       <DashboardHeader
         title="Solicitudes de reposición de SIM"
         subtitle="Crea y supervisa solicitudes de reposición registradas por el operador."
-        role="Operator"
+        role={role}
         actions={
           <Button onClick={() => setShowModal(true)}>
             <Plus className="h-4 w-4" />

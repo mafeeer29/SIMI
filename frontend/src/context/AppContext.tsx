@@ -5,16 +5,15 @@ import {
   useState,
   type ReactNode,
 } from "react";
-import type { Role, SimRequest } from "../types/request";
-import { mockRequests } from "../data/mockRequests";
+import type { Role, SimRequest, CreateRequestInput } from "../types/request";
+import { mockRequests, mockWallets } from "../data/mockRequests";
 
-const MOCK_WALLET = "0x71F3…8AC2";
+const DEFAULT_WALLET = "0x71F3…8AC2";
 
 interface AppContextValue {
   role: Role;
-  setRole: (r: Role) => void;
   requests: SimRequest[];
-  addRequest: (lineId: string, holder: string) => void;
+  addRequest: (input: CreateRequestInput) => void;
   updateRequest: (id: number, patch: Partial<SimRequest>) => void;
   getRequest: (id: number) => SimRequest | undefined;
   walletConnected: boolean;
@@ -26,18 +25,23 @@ interface AppContextValue {
 const AppContext = createContext<AppContextValue | null>(null);
 
 export function AppProvider({ children }: { children: ReactNode }) {
-  const [role, setRole] = useState<Role>("Operator");
   const [requests, setRequests] = useState<SimRequest[]>(mockRequests);
   const [walletConnected, setWalletConnected] = useState(true);
+  const [walletAddress] = useState<string>(DEFAULT_WALLET);
+
+  const role = useMemo<Role>(() => {
+    const entry = mockWallets[walletAddress];
+    return entry ? entry.role : "Operator";
+  }, [walletAddress]);
 
   const value = useMemo<AppContextValue>(() => {
-    const addRequest = (lineId: string, holder: string) => {
+    const addRequest = ({ lineId, holder }: CreateRequestInput) => {
       setRequests((prev) => {
         const nextId = Math.max(0, ...prev.map((r) => r.id)) + 1;
         const newReq: SimRequest = {
           id: nextId,
           lineId,
-          operator: "0x71F3…8AC2",
+          operator: walletAddress,
           holder,
           createdAt: new Date().toISOString(),
           identityVerified: false,
@@ -59,17 +63,16 @@ export function AppProvider({ children }: { children: ReactNode }) {
 
     return {
       role,
-      setRole,
       requests,
       addRequest,
       updateRequest,
       getRequest,
       walletConnected,
-      walletAddress: MOCK_WALLET,
+      walletAddress,
       connectWallet: () => setWalletConnected(true),
       disconnectWallet: () => setWalletConnected(false),
     };
-  }, [role, requests, walletConnected]);
+  }, [role, requests, walletConnected, walletAddress]);
 
   return <AppContext.Provider value={value}>{children}</AppContext.Provider>;
 }

@@ -8,7 +8,7 @@ import { StateIllustration } from "../components/StateIllustration";
 import { abbreviateLineId, abbreviateWallet, formatDate } from "../utils/format";
 
 export function VerifierDashboard() {
-  const { requests, updateRequest } = useApp();
+  const { role, requests, updateRequest } = useApp();
   const [selectedId, setSelectedId] = useState<number | null>(null);
   const [verifying, setVerifying] = useState(false);
   const [done, setDone] = useState<number | null>(null);
@@ -37,8 +37,8 @@ export function VerifierDashboard() {
     <div className="mx-auto max-w-7xl px-4 py-8 sm:px-6">
       <DashboardHeader
         title="Verificación de identidad"
-        subtitle="Revisa y verifica la identidad de los titulares de solicitudes de reposición."
-        role="Verifier"
+        subtitle="Revisa y verifica la identidad de las solicitudes de reposición pendientes."
+        role={role}
       />
 
       <div className="grid gap-6 lg:grid-cols-2">
@@ -161,21 +161,10 @@ export function VerifierDashboard() {
                     Validación externa
                   </span>
                 </div>
-                <div className="space-y-2">
-                  {[
-                    "Autenticidad del documento validada",
-                    "Coincidencia biométrica confirmada",
-                    "Registro KYC del titular verificado",
-                  ].map((check) => (
-                    <div
-                      key={check}
-                      className="flex items-center gap-2 text-sm text-navy-200"
-                    >
-                      <CheckCircle2 className="h-4 w-4 text-emerald-400" />
-                      {check}
-                    </div>
-                  ))}
-                </div>
+                <p className="text-sm text-navy-300">
+                  La verificación de identidad se realiza fuera de la blockchain.
+                  La interfaz solo registra que el proceso fue completado.
+                </p>
                 <div className="mt-4 rounded-lg bg-emerald-500/10 px-3 py-2 text-sm text-emerald-300">
                   Identidad verificada correctamente
                 </div>
@@ -188,7 +177,7 @@ export function VerifierDashboard() {
                 disabled={verifying}
               >
                 <ShieldCheck className="h-5 w-5" />
-                {verifying ? "Registrando…" : "Registrar verificación"}
+                {verifying ? "Registrando…" : "Verificar identidad"}
               </Button>
             </div>
           )}

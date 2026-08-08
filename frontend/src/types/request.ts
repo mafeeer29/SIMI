@@ -1,7 +1,6 @@
 export type RequestStatus =
   | "Created"
   | "IdentityVerified"
-  | "HolderConfirmed"
   | "Authorized"
   | "Disputed";
 
@@ -24,4 +23,9 @@ export type StepState = "completed" | "current" | "pending";
 export interface TimelineStep {
   label: string;
   state: StepState;
+}
+
+export interface CreateRequestInput {
+  lineId: string;
+  holder: string;
 }

@@ -37,7 +37,7 @@ export function buildTimeline(req: SimRequest): TimelineStep[] {
         : "pending",
     },
     {
-      label: req.disputed ? "Disputada / Bloqueada" : "Autorización final",
+      label: req.disputed ? "Disputada / bloqueada" : "Autorización final",
       state: req.disputed
         ? "completed"
         : req.holderConfirmed

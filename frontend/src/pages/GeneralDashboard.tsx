@@ -3,39 +3,20 @@ import {
   Clock,
   AlertTriangle,
   FileText,
-  Radio,
-  ShieldCheck,
-  UserCheck,
 } from "lucide-react";
-import type { Role } from "../types/request";
 import { useApp } from "../context/AppContext";
 import { DashboardHeader } from "../components/DashboardHeader";
 import { RequestCard } from "../components/RequestCard";
 
-const roleLabels: Record<Role, string> = {
-  Operator: "Operador",
-  Verifier: "Verificador",
-  Holder: "Titular",
-};
-
-const roles: { value: Role; icon: typeof Radio }[] = [
-  { value: "Operator", icon: Radio },
-  { value: "Verifier", icon: ShieldCheck },
-  { value: "Holder", icon: UserCheck },
-];
-
 export function GeneralDashboard() {
-  const { role, setRole, requests } = useApp();
+  const { role, requests } = useApp();
 
   const active = requests.filter(
     (r) => r.status !== "Authorized" && r.status !== "Disputed"
   ).length;
   const authorized = requests.filter((r) => r.status === "Authorized").length;
   const pending = requests.filter(
-    (r) =>
-      r.status === "Created" ||
-      r.status === "IdentityVerified" ||
-      r.status === "HolderConfirmed"
+    (r) => r.status === "Created" || r.status === "IdentityVerified"
   ).length;
   const disputed = requests.filter((r) => r.status === "Disputed").length;
 
@@ -52,27 +33,6 @@ export function GeneralDashboard() {
         title="Dashboard"
         subtitle="Resumen de todas las solicitudes de reposición de SIM"
         role={role}
-        actions={
-          <div className="flex items-center gap-1 rounded-xl border border-white/10 bg-navy-900/70 p-1">
-            {roles.map((r) => {
-              const Icon = r.icon;
-              return (
-                <button
-                  key={r.value}
-                  onClick={() => setRole(r.value)}
-                  className={`flex items-center gap-1.5 rounded-lg px-3 py-1.5 text-xs font-semibold transition ${
-                    role === r.value
-                      ? "bg-sky-500 text-white"
-                      : "text-navy-300 hover:text-white"
-                  }`}
-                >
-                  <Icon className="h-3.5 w-3.5" />
-                  {roleLabels[r.value]}
-                </button>
-              );
-            })}
-          </div>
-        }
       />
 
       {/* Stats */}

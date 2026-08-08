@@ -1,39 +1,55 @@
-import Link from "next/link";
-import {
-  Shield,
-  Radio,
-  UserCheck,
-  CheckCircle2,
-  ArrowRight,
-  Lock,
-  FileCheck,
-  ShieldAlert,
-} from "lucide-react";
-import { Button } from "../Button";
+import { Shield, Radio, UserCheck, CircleCheck as CheckCircle2, ArrowRight, Lock, FileCheck, ShieldAlert } from "lucide-react";
+import { RainbowKitCustomConnectButton } from "~~/components/scaffold-eth";
 
 const flowSteps = [
-  { icon: Radio, label: "Operador", desc: "Crea una solicitud de reposición de SIM", color: "text-sky-400" },
-  { icon: FileCheck, label: "Verificación de identidad", desc: "El verificador valida la identidad del titular", color: "text-amber-400" },
-  { icon: UserCheck, label: "Confirmación del titular", desc: "El titular confirma o disputa la solicitud", color: "text-sky-400" },
-  { icon: CheckCircle2, label: "Autorizada", desc: "La reposición se autoriza on-chain", color: "text-emerald-400" },
+  {
+    icon: Radio,
+    label: "Solicitud del operador",
+    desc: "El operador crea una solicitud de reposición de SIM.",
+    color: "text-sky-400",
+  },
+  {
+    icon: FileCheck,
+    label: "Verificación de identidad",
+    desc: "El verificador registra que la identidad fue validada off-chain.",
+    color: "text-amber-400",
+  },
+  {
+    icon: UserCheck,
+    label: "Confirmación del titular",
+    desc: "El titular revisa y reconoce o disputa la solicitud.",
+    color: "text-sky-400",
+  },
+  {
+    icon: CheckCircle2,
+    label: "Autorización on-chain",
+    desc: "La reposición se autoriza y queda registrada on-chain.",
+    color: "text-emerald-400",
+  },
 ];
 
 const securityPoints = [
   {
     icon: Lock,
     title: "Trazabilidad on-chain",
-    desc: "Cada paso queda registrado de forma inmutable, creando un historial a prueba de manipulaciones de cada reposición.",
+    desc: "Cada paso queda registrado de forma inmutable, creando un historial auditable de cada reposición.",
   },
   {
     icon: ShieldAlert,
     title: "Protección del titular",
-    desc: "El titular tiene la última palabra. Las solicitudes no reconocidas se bloquean al instante.",
+    desc: "El titular tiene la última palabra. Las solicitudes no reconocidas se bloquean según las reglas del contrato.",
   },
   {
     icon: Shield,
     title: "Autorización multipartita",
-    desc: "Operador, verificador y titular deben coincidir antes de reemplazar un SIM.",
+    desc: "Operador, verificador y titular deben coincidir antes de autorizar una reposición.",
   },
+];
+
+const indicators = [
+  { label: "Arbitrum Sepolia", color: "text-sky-300" },
+  { label: "Consentimiento verificable", color: "text-cyan-300" },
+  { label: "Auditoría on-chain", color: "text-emerald-300" },
 ];
 
 export function Landing() {
@@ -41,43 +57,44 @@ export function Landing() {
     <div className="mx-auto max-w-7xl px-4 sm:px-6">
       {/* Hero */}
       <section className="relative overflow-hidden py-12 sm:py-20">
-        <div className="grid items-center gap-8 lg:grid-cols-2">
+        <div className="grid items-center gap-8 lg:grid-cols-[1.2fr_0.8fr]">
           <div className="animate-fade-in">
             <div className="mb-4 inline-flex items-center gap-2 rounded-full border border-sky-500/30 bg-sky-500/10 px-3 py-1 text-xs font-semibold text-sky-300">
               <Shield className="h-3.5 w-3.5" />
-              Telecomunicaciones aseguradas con blockchain
+              Seguridad para reposiciones SIM
             </div>
             <h1 className="text-4xl font-bold leading-tight tracking-tight text-white sm:text-5xl lg:text-6xl">
-              Reposiciones de SIM{" "}
-              <span className="bg-gradient-to-r from-sky-400 to-sky-500 bg-clip-text text-transparent">
-                más seguras
-              </span>{" "}
-              con autorización verificable
+              Tu SIM.{" "}
+              <span className="bg-gradient-to-r from-sky-400 to-cyan-300 bg-clip-text text-transparent">
+                Tu autorización.
+              </span>
             </h1>
             <p className="mt-5 max-w-lg text-base text-navy-200 sm:text-lg">
-              SIMI agrega una capa de autorización y auditoría basada en
-              blockchain para reducir el riesgo de reposiciones de SIM no
-              autorizadas.
+              SIMI agrega consentimiento verificable y trazabilidad on-chain al
+              proceso de reposición de una SIM.
             </p>
-            <div className="mt-8 flex flex-wrap gap-3">
-              <Button size="lg">
-                Conectar Wallet
-                <ArrowRight className="h-5 w-5" />
-              </Button>
-              <Link href="/dashboard" className="mt-6 inline-block">
-                <Button size="lg" variant="outline">
-                  Cómo funciona
-                </Button>
-              </Link>
+            <div className="mt-8 flex flex-wrap items-center gap-4">
+              <RainbowKitCustomConnectButton />
+            </div>
+            <div className="mt-6 flex flex-wrap gap-2">
+              {indicators.map((ind) => (
+                <span
+                  key={ind.label}
+                  className={`inline-flex items-center gap-1.5 rounded-full border border-white/10 bg-navy-900/80 px-3 py-1 text-xs font-medium ${ind.color}`}
+                >
+                  <span className="h-1.5 w-1.5 rounded-full bg-current" />
+                  {ind.label}
+                </span>
+              ))}
             </div>
           </div>
 
           <div className="relative animate-scale-in">
-            <div className="absolute inset-0 -z-10 rounded-full bg-gradient-to-br from-sky-500/20 via-navy-500/10 to-transparent blur-3xl" />
+            <div className="absolute inset-0 -z-10 rounded-full bg-gradient-to-br from-sky-500/20 via-cyan-500/10 to-transparent blur-3xl" />
             <img
               src="/assets/simi/hero/simi-hero.png"
               alt="SIMI hero"
-              className="mx-auto w-full max-w-2xl object-contain drop-shadow-2xl"
+              className="mx-auto w-full max-w-lg object-contain drop-shadow-2xl"
             />
           </div>
         </div>
@@ -87,11 +104,11 @@ export function Landing() {
       <section className="py-12 sm:py-16">
         <div className="mb-10 text-center">
           <h2 className="text-2xl font-bold text-white sm:text-3xl">
-            Cómo funciona SIMI
+            Cómo funciona
           </h2>
           <p className="mt-2 text-navy-300">
-            Un flujo de autorización de cuatro pasos garantiza que ningún SIM se
-            reemplace sin el consentimiento de todas las partes.
+            Un flujo de cuatro pasos garantiza que ninguna SIM se reemplace sin
+            el consentimiento de todas las partes.
           </p>
         </div>
         <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
@@ -125,8 +142,8 @@ export function Landing() {
             Por qué SIMI importa
           </h2>
           <p className="mt-2 text-navy-300">
-            El fraude de SIM swap es una amenaza creciente. SIMI hace que cada
-            reposición sea verificable y revocable.
+            SIMI reduce el riesgo de reposiciones no autorizadas asociadas a
+            escenarios como SIM swapping.
           </p>
         </div>
         <div className="grid gap-4 sm:grid-cols-3">
@@ -155,18 +172,15 @@ export function Landing() {
             className="mx-auto mb-4 h-24 w-24 object-contain drop-shadow-lg"
           />
           <h2 className="text-2xl font-bold text-white sm:text-3xl">
-            ¿Listo para explorar SIMI?
+            Conecta tu wallet para comenzar
           </h2>
           <p className="mx-auto mt-2 max-w-md text-navy-300">
-            Navega los dashboards de demostración para ver el flujo completo de
-            autorización en acción.
+            Explora el flujo completo de autorización y supervisa las
+            solicitudes de reposición en Arbitrum Sepolia.
           </p>
-          <Link href="/dashboard" className="mt-6 inline-block">
-            <Button size="lg">
-              Ir al Dashboard
-              <ArrowRight className="h-5 w-5" />
-            </Button>
-          </Link>
+          <div className="mt-6 flex justify-center">
+            <RainbowKitCustomConnectButton />
+          </div>
         </div>
       </section>
     </div>

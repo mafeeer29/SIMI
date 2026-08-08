@@ -27,5 +27,5 @@ export interface TimelineStep {
 
 export interface CreateRequestInput {
   lineId: string;
-  holder: string;
+  holder?: string;
 }

@@ -6,6 +6,7 @@ type Size = "sm" | "md" | "lg";
 interface ButtonProps extends ButtonHTMLAttributes<HTMLButtonElement> {
   variant?: Variant;
   size?: Size;
+  loading?: boolean;
   children: ReactNode;
 }
 
@@ -30,15 +31,21 @@ const sizeClasses: Record<Size, string> = {
 export function Button({
   variant = "primary",
   size = "md",
+  loading = false,
   className = "",
   children,
+  disabled,
   ...props
 }: ButtonProps) {
   return (
     <button
       className={`inline-flex items-center justify-center gap-2 rounded-xl font-semibold transition-all duration-200 active:scale-[0.98] disabled:cursor-not-allowed disabled:opacity-50 ${variantClasses[variant]} ${sizeClasses[size]} ${className}`}
+      disabled={disabled || loading}
       {...props}
     >
+      {loading && (
+        <span className="h-4 w-4 animate-spin rounded-full border-2 border-white/30 border-t-white" />
+      )}
       {children}
     </button>
   );

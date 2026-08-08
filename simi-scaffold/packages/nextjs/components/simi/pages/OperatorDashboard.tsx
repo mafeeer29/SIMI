@@ -1,5 +1,5 @@
 import { useState, type FormEvent } from "react";
-import { Plus, X, Radio, CheckCircle2 } from "lucide-react";
+import { Plus, X, Radio, CircleCheck as CheckCircle2, Loader as Loader2 } from "lucide-react";
 import type { SimRequest, CreateRequestInput, Role } from "../types/request";
 import { DashboardHeader } from "../DashboardHeader";
 import { Button } from "../Button";
@@ -8,6 +8,7 @@ import { RequestCard } from "../RequestCard";
 interface OperatorDashboardProps {
   requests: SimRequest[];
   role?: Role;
+  isCreatingRequest: boolean;
   onCreateRequest: (input: CreateRequestInput) => void;
   onSelectRequest: (requestId: number) => void;
 }
@@ -15,22 +16,21 @@ interface OperatorDashboardProps {
 export function OperatorDashboard({
   requests,
   role,
+  isCreatingRequest,
   onCreateRequest,
   onSelectRequest,
 }: OperatorDashboardProps) {
   const [showModal, setShowModal] = useState(false);
   const [lineId, setLineId] = useState("");
-  const [holder, setHolder] = useState("");
   const [justCreated, setJustCreated] = useState<number | null>(null);
 
   const handleSubmit = (e: FormEvent) => {
     e.preventDefault();
-    if (!lineId.trim() || !holder.trim()) return;
+    if (!lineId.trim() || isCreatingRequest) return;
     const nextId = Math.max(0, ...requests.map((r) => r.id)) + 1;
-    onCreateRequest({ lineId: lineId.trim(), holder: holder.trim() });
+    onCreateRequest({ lineId: lineId.trim() });
     setJustCreated(nextId);
     setLineId("");
-    setHolder("");
     setShowModal(false);
     setTimeout(() => setJustCreated(null), 3000);
   };
@@ -38,8 +38,8 @@ export function OperatorDashboard({
   return (
     <div className="mx-auto max-w-7xl px-4 py-8 sm:px-6">
       <DashboardHeader
-        title="Solicitudes de reposición de SIM"
-        subtitle="Crea y supervisa solicitudes de reposición registradas por el operador."
+        title="Panel del operador"
+        subtitle="Gestiona solicitudes de reposición de SIM."
         role={role}
         actions={
           <Button onClick={() => setShowModal(true)}>
@@ -58,11 +58,7 @@ export function OperatorDashboard({
 
       <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
         {requests.map((req) => (
-          <RequestCard
-            key={req.id}
-            req={req}
-            onClick={onSelectRequest}
-          />
+          <RequestCard key={req.id} req={req} onClick={onSelectRequest} />
         ))}
       </div>
 
@@ -75,11 +71,10 @@ export function OperatorDashboard({
         </div>
       )}
 
-      {/* Modal */}
       {showModal && (
         <div
           className="fixed inset-0 z-50 flex items-center justify-center bg-navy-950/80 p-4 backdrop-blur-sm animate-fade-in"
-          onClick={() => setShowModal(false)}
+          onClick={() => !isCreatingRequest && setShowModal(false)}
         >
           <div
             className="card-light w-full max-w-md p-6 animate-scale-in"
@@ -91,7 +86,8 @@ export function OperatorDashboard({
               </h2>
               <button
                 onClick={() => setShowModal(false)}
-                className="rounded-lg p-1.5 text-navy-400 hover:bg-navy-100"
+                disabled={isCreatingRequest}
+                className="rounded-lg p-1.5 text-navy-400 hover:bg-navy-100 disabled:opacity-50"
               >
                 <X className="h-5 w-5" />
               </button>
@@ -99,7 +95,7 @@ export function OperatorDashboard({
             <form onSubmit={handleSubmit} className="space-y-4">
               <div>
                 <label className="mb-1.5 block text-sm font-semibold text-navy-700">
-                  Line Identifier
+                  Line ID
                 </label>
                 <input
                   className="input"
@@ -107,19 +103,11 @@ export function OperatorDashboard({
                   value={lineId}
                   onChange={(e) => setLineId(e.target.value)}
                   required
+                  disabled={isCreatingRequest}
                 />
-              </div>
-              <div>
-                <label className="mb-1.5 block text-sm font-semibold text-navy-700">
-                  Wallet del titular
-                </label>
-                <input
-                  className="input font-mono"
-                  placeholder="0x9B2c…44E1"
-                  value={holder}
-                  onChange={(e) => setHolder(e.target.value)}
-                  required
-                />
+                <p className="mt-1.5 text-xs text-navy-400">
+                  Utiliza el identificador pseudónimo registrado para esta línea.
+                </p>
               </div>
               <div className="flex gap-3 pt-2">
                 <Button
@@ -127,13 +115,24 @@ export function OperatorDashboard({
                   variant="outline"
                   className="flex-1 border-navy-200 text-navy-700 hover:bg-navy-50"
                   onClick={() => setShowModal(false)}
+                  disabled={isCreatingRequest}
                 >
                   Cancelar
                 </Button>
-                <Button type="submit" className="flex-1">
-                  Crear solicitud
+                <Button
+                  type="submit"
+                  className="flex-1"
+                  loading={isCreatingRequest}
+                >
+                  {isCreatingRequest ? "Creando…" : "Crear solicitud"}
                 </Button>
               </div>
+              {isCreatingRequest && (
+                <div className="flex items-center gap-2 rounded-lg bg-sky-50 px-3 py-2 text-sm text-sky-700">
+                  <Loader2 className="h-4 w-4 animate-spin" />
+                  Confirma la transacción en tu wallet…
+                </div>
+              )}
             </form>
           </div>
         </div>

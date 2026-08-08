@@ -82,13 +82,24 @@ const normalizeRequest = (request: unknown): SimRequest | null => {
 };
 
 const encodeLineId = (lineId: string): `0x${string}` => {
+  const value = lineId.trim();
+
+  // Si ya viene como bytes32 hexadecimal, devolverlo tal cual
+  if (/^0x[a-fA-F0-9]{64}$/.test(value)) {
+    return value as `0x${string}`;
+  }
+
+  // Si viene como texto corto, convertirlo a bytes32
   const encoder = new TextEncoder();
-  const bytes = encoder.encode(lineId);
+  const bytes = encoder.encode(value);
+
   if (bytes.length > 32) {
     throw new Error("Line ID must be 32 bytes or fewer");
   }
+
   const padded = new Uint8Array(32);
   padded.set(bytes);
+
   return toHex(padded) as `0x${string}`;
 };
 

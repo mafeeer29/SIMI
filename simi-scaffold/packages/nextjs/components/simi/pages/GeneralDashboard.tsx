@@ -1,9 +1,4 @@
-import {
-  CheckCircle2,
-  Clock,
-  AlertTriangle,
-  FileText,
-} from "lucide-react";
+import { CheckCircle2, Clock, AlertTriangle, FileText, LayoutDashboard, Inbox } from "lucide-react";
 import type { SimRequest, Role } from "../types/request";
 import { DashboardHeader } from "../DashboardHeader";
 import { RequestCard } from "../RequestCard";
@@ -14,109 +9,75 @@ interface GeneralDashboardProps {
 }
 
 export function GeneralDashboard({ requests, role }: GeneralDashboardProps) {
-  const active = requests.filter(
-    (r) => r.status !== "Authorized" && r.status !== "Disputed"
-  ).length;
   const authorized = requests.filter((r) => r.status === "Authorized").length;
   const pending = requests.filter(
-    (r) => r.status === "Created" || r.status === "IdentityVerified"
+    (r) => r.status === "Created" || r.status === "IdentityVerified",
   ).length;
   const disputed = requests.filter((r) => r.status === "Disputed").length;
 
   const stats = [
-    {
-      label: "Solicitudes",
-      value: active,
-      detail: "Activas",
-      icon: FileText,
-      accent: "text-sky-300",
-      ring: "bg-sky-500/10",
-    },
-    {
-      label: "Autorizadas",
-      value: authorized,
-      detail: "Registradas",
-      icon: CheckCircle2,
-      accent: "text-emerald-300",
-      ring: "bg-emerald-500/10",
-    },
-    {
-      label: "Pendientes",
-      value: pending,
-      detail: "En progreso",
-      icon: Clock,
-      accent: "text-amber-300",
-      ring: "bg-amber-500/10",
-    },
-    {
-      label: "Disputadas",
-      value: disputed,
-      detail: "Alertas",
-      icon: AlertTriangle,
-      accent: "text-rose-300",
-      ring: "bg-rose-500/10",
-    },
+    { label: "Totales", value: requests.length, icon: FileText, accent: "text-sky-300", ring: "border-sky-500/20 bg-sky-500/10" },
+    { label: "Pendientes", value: pending, icon: Clock, accent: "text-amber-300", ring: "border-amber-500/20 bg-amber-500/10" },
+    { label: "Autorizadas", value: authorized, icon: CheckCircle2, accent: "text-emerald-300", ring: "border-emerald-500/20 bg-emerald-500/10" },
+    { label: "Disputadas", value: disputed, icon: AlertTriangle, accent: "text-rose-300", ring: "border-rose-500/20 bg-rose-500/10" },
   ];
 
+  const recent = [...requests].sort((a, b) => b.id - a.id).slice(0, 8);
+
   return (
-    <div className="mx-auto max-w-7xl px-4 py-8 sm:px-6">
+    <div className="mx-auto max-w-6xl px-4 py-8 sm:px-6">
       <DashboardHeader
-        title="Dashboard"
-        subtitle="Resumen de solicitudes y estado de autorizaciones de reposición de SIM."
+        eyebrow="Vista general"
+        icon={LayoutDashboard}
+        title="Panel de control SIMI"
+        subtitle="Estado agregado de todas las solicitudes de reposición registradas on-chain."
         role={role}
       />
 
-      <div className="mb-8 rounded-[28px] border border-white/10 bg-navy-900/80 p-6 shadow-card">
-        <div className="mb-6 flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
-          <div>
-            <p className="text-sm text-navy-300">
-              Métricas principales para supervisar el flujo de solicitudes y detectar alertas.
-            </p>
-          </div>
-          <span className="inline-flex rounded-full bg-navy-950/80 px-3 py-2 text-sm text-navy-200">
-            {requests.length} solicitudes totales
-          </span>
-        </div>
-
-        <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
-          {stats.map((stat) => {
-            const Icon = stat.icon;
-            return (
-              <div
-                key={stat.label}
-                className="rounded-[28px] border border-white/10 bg-navy-950/80 p-5 shadow-sm"
-              >
-                <div className={`mb-4 inline-flex h-12 w-12 items-center justify-center rounded-2xl ${stat.ring}`}>
-                  <Icon className={`h-5 w-5 ${stat.accent}`} />
-                </div>
-                <p className="text-3xl font-semibold text-white">{stat.value}</p>
-                <p className="mt-2 text-sm text-navy-300">{stat.label}</p>
-                <p className="mt-1 text-xs uppercase tracking-[0.24em] text-navy-500">
-                  {stat.detail}
-                </p>
+      {/* Compact metric strip */}
+      <div className="mb-6 grid grid-cols-2 gap-3 lg:grid-cols-4">
+        {stats.map((stat) => {
+          const Icon = stat.icon;
+          return (
+            <div
+              key={stat.label}
+              className="flex items-center gap-4 rounded-2xl border border-white/10 bg-navy-900/60 p-4 backdrop-blur-md"
+            >
+              <span className={`flex h-11 w-11 shrink-0 items-center justify-center rounded-xl border ${stat.ring}`}>
+                <Icon className={`h-5 w-5 ${stat.accent}`} />
+              </span>
+              <div className="min-w-0">
+                <p className="text-2xl font-bold leading-none text-white">{stat.value}</p>
+                <p className="mt-1.5 truncate text-xs text-navy-400">{stat.label}</p>
               </div>
-            );
-          })}
-        </div>
+            </div>
+          );
+        })}
       </div>
 
-      <div className="rounded-[32px] border border-white/10 bg-navy-900/80 p-6 shadow-card">
-        <div className="mb-6 flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
+      {/* Recent requests */}
+      <div className="card p-5 sm:p-6">
+        <div className="mb-5 flex items-center justify-between gap-4">
           <div>
-            <h2 className="text-xl font-semibold text-white">Solicitudes recientes</h2>
-            <p className="text-sm text-navy-300">
-              Revisa las últimas solicitudes registradas en la blockchain.
-            </p>
+            <h2 className="text-lg font-semibold text-white">Solicitudes recientes</h2>
+            <p className="text-sm text-navy-400">Últimos registros en la blockchain</p>
           </div>
-          <span className="rounded-full bg-navy-950/80 px-3 py-2 text-sm text-navy-200">
-            {requests.length} items
-          </span>
+          <span className="pill">{requests.length} en total</span>
         </div>
-        <div className="space-y-3">
-          {requests.map((req) => (
-            <RequestCard key={req.id} req={req} />
-          ))}
-        </div>
+
+        {recent.length > 0 ? (
+          <div className="space-y-2.5">
+            {recent.map((req) => (
+              <RequestCard key={req.id} req={req} />
+            ))}
+          </div>
+        ) : (
+          <div className="flex flex-col items-center rounded-2xl border border-dashed border-white/10 bg-navy-950/40 px-6 py-12 text-center">
+            <Inbox className="mb-3 h-8 w-8 text-navy-500" />
+            <p className="text-sm text-navy-300">Aún no hay solicitudes registradas.</p>
+            <p className="mt-1 text-xs text-navy-500">Las nuevas solicitudes aparecerán aquí.</p>
+          </div>
+        )}
       </div>
     </div>
   );

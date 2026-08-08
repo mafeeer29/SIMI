@@ -2,25 +2,25 @@ type State = "pending" | "authorized" | "blocked";
 
 const stateConfig: Record<
   State,
-  { src: string; alt: string; ring: string; bg: string }
+  { src: string; alt: string; ring: string; glow: string }
 > = {
   pending: {
     src: "/assets/simi/states/simi-pending.png",
-    alt: "Pending state",
-    ring: "ring-amber-400/30",
-    bg: "from-amber-500/10",
+    alt: "Reposición pendiente de verificación",
+    ring: "ring-amber-400/25",
+    glow: "bg-amber-500/20",
   },
   authorized: {
     src: "/assets/simi/states/simi-authorized.png",
-    alt: "Authorized state",
-    ring: "ring-emerald-400/30",
-    bg: "from-emerald-500/10",
+    alt: "Reposición autorizada",
+    ring: "ring-emerald-400/25",
+    glow: "bg-emerald-500/20",
   },
   blocked: {
     src: "/assets/simi/states/simi-blocked.png",
-    alt: "Blocked state",
-    ring: "ring-rose-400/30",
-    bg: "from-rose-500/10",
+    alt: "Reposición bloqueada",
+    ring: "ring-rose-400/25",
+    glow: "bg-rose-500/20",
   },
 };
 
@@ -33,16 +33,12 @@ export function StateIllustration({
 }) {
   const cfg = stateConfig[state];
   return (
-    <div
-      className={`relative flex items-center justify-center ${className}`}
-    >
-      <div
-        className={`absolute inset-0 rounded-full bg-gradient-to-b ${cfg.bg} to-transparent blur-2xl`}
-      />
+    <div className={`relative flex items-center justify-center ${className}`}>
+      <div className={`absolute h-40 w-40 rounded-full ${cfg.glow} blur-3xl sm:h-52 sm:w-52`} />
       <img
-        src={cfg.src}
+        src={cfg.src || "/placeholder.svg"}
         alt={cfg.alt}
-        className={`relative h-40 w-40 object-contain drop-shadow-lg ring-4 ${cfg.ring} rounded-full bg-navy-900/40 sm:h-48 sm:w-48`}
+        className={`relative h-40 w-40 rounded-full bg-navy-900/50 object-contain p-2 ring-4 drop-shadow-2xl sm:h-48 sm:w-48 ${cfg.ring}`}
       />
     </div>
   );

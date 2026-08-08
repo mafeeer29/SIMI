@@ -73,9 +73,6 @@
   The default border color has changed to `currentColor` in Tailwind CSS v4,
   so we've added these compatibility styles to make sure everything still
   looks the same as it did with Tailwind CSS v3.
-
-  If we ever want to remove these styles, we need to add an explicit border
-  color utility to any element that depends on these defaults.
 */
 @layer base {
   *,
@@ -94,16 +91,14 @@
   body {
     min-height: 100vh;
     @apply bg-navy-950 text-navy-100 font-sans antialiased;
-    background-image: radial-gradient(
-        ellipse 80% 50% at 50% -10%,
-        rgba(58, 95, 191, 0.18),
-        transparent
-      ),
-      radial-gradient(
-        ellipse 60% 40% at 90% 10%,
-        rgba(56, 189, 248, 0.08),
-        transparent
-      );
+    /* Layered ambient glow + faint technical grid for a security/telecom feel */
+    background-image:
+      radial-gradient(ellipse 80% 50% at 50% -10%, rgba(58, 95, 191, 0.2), transparent),
+      radial-gradient(ellipse 60% 40% at 92% 6%, rgba(56, 189, 248, 0.1), transparent),
+      radial-gradient(ellipse 50% 45% at 4% 96%, rgba(56, 189, 248, 0.06), transparent),
+      linear-gradient(to right, rgba(148, 187, 251, 0.035) 1px, transparent 1px),
+      linear-gradient(to bottom, rgba(148, 187, 251, 0.035) 1px, transparent 1px);
+    background-size: 100% 100%, 100% 100%, 100% 100%, 44px 44px, 44px 44px;
     background-attachment: fixed;
   }
 
@@ -116,31 +111,71 @@
   h3,
   h4 {
     margin-bottom: 0.5rem;
-    line-height: 1;
+    line-height: 1.15;
   }
 }
 
 @layer components {
+  /* Primary elevated glass surface */
   .card {
-    @apply rounded-[28px] border border-white/10 bg-navy-950/80 backdrop-blur-md shadow-card;
+    @apply rounded-[28px] border border-white/10 bg-navy-900/70 backdrop-blur-xl shadow-card;
   }
 
+  /* Interactive card that lifts on hover */
+  .card-hover {
+    @apply transition duration-200 hover:-translate-y-0.5 hover:border-sky-500/40 hover:bg-navy-900/90;
+  }
+
+  /* Light modal surface (kept for compatibility) */
   .card-light {
     @apply rounded-[28px] border border-navy-200/60 bg-white/95 shadow-card;
   }
 
+  /* Dark modal / dialog surface used across SIMI */
+  .modal-panel {
+    @apply rounded-[28px] border border-white/10 bg-navy-900/95 shadow-card backdrop-blur-2xl;
+  }
+
+  /* Nested inset panel inside a card */
+  .surface {
+    @apply rounded-2xl border border-white/[0.07] bg-navy-950/50;
+  }
+
+  /* White field (legacy) */
   .input {
     @apply w-full rounded-2xl border border-navy-200 bg-white px-4 py-3 text-navy-900 placeholder-navy-300 outline-none transition focus:border-sky-500 focus:ring-2 focus:ring-sky-500/20;
   }
 
+  /* Dark field matching the SIMI theme */
+  .input-dark {
+    @apply w-full rounded-2xl border border-white/10 bg-navy-950/70 px-4 py-3 text-white placeholder-navy-400 outline-none transition focus:border-sky-500/60 focus:ring-2 focus:ring-sky-500/20;
+  }
+
   .section-shell {
-    @apply rounded-[32px] border border-white/10 bg-navy-900/80 p-6 shadow-card;
+    @apply rounded-[32px] border border-white/10 bg-navy-900/70 p-6 shadow-card backdrop-blur-xl;
+  }
+
+  /* Small label pill */
+  .pill {
+    @apply inline-flex items-center gap-1.5 rounded-full border border-white/10 bg-navy-950/60 px-3 py-1 text-xs font-medium text-navy-200;
+  }
+
+  /* Eyebrow / uppercase micro-label */
+  .eyebrow {
+    @apply text-[0.7rem] font-semibold uppercase tracking-[0.24em] text-navy-400;
   }
 }
 
 @layer utilities {
   .shadow-card {
-    box-shadow: 0 24px 80px -24px rgba(0, 0, 0, 0.6), 0 0 0 1px rgba(255, 255, 255, 0.04);
+    box-shadow:
+      0 24px 80px -24px rgba(3, 8, 23, 0.7),
+      inset 0 1px 0 0 rgba(255, 255, 255, 0.05),
+      0 0 0 1px rgba(255, 255, 255, 0.04);
+  }
+
+  .brand-text {
+    @apply bg-gradient-to-r from-sky-300 via-cyan-300 to-sky-500 bg-clip-text text-transparent;
   }
 
   .animate-fade-in {
@@ -154,6 +189,38 @@
   .animate-pulse-soft {
     animation: pulse 1.2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
   }
+
+  .animate-float {
+    animation: float 6s ease-in-out infinite;
+  }
+
+  /* Staggered reveal helpers */
+  .stagger-1 { animation-delay: 0.06s; }
+  .stagger-2 { animation-delay: 0.12s; }
+  .stagger-3 { animation-delay: 0.18s; }
+  .stagger-4 { animation-delay: 0.24s; }
+}
+
+/* Branded connect button — scoped so it only restyles the SIMI CTA,
+   never the scaffold-eth dropdowns shown once connected. */
+.simi-connect-cta .btn-primary {
+  height: auto;
+  min-height: 0;
+  border: none;
+  border-radius: 0.9rem;
+  padding: 0.85rem 1.6rem;
+  font-size: 0.95rem;
+  font-weight: 600;
+  color: #04122e;
+  background-image: linear-gradient(135deg, #7dd3fc 0%, #38bdf8 50%, #22d3ee 100%);
+  box-shadow: 0 12px 32px -12px rgba(56, 189, 248, 0.7);
+  transition: transform 0.2s ease, box-shadow 0.2s ease, filter 0.2s ease;
+}
+
+.simi-connect-cta .btn-primary:hover {
+  transform: translateY(-1px);
+  filter: brightness(1.05);
+  box-shadow: 0 16px 40px -12px rgba(56, 189, 248, 0.85);
 }
 
 @keyframes fade-in {
@@ -175,6 +242,16 @@
   to {
     opacity: 1;
     transform: translateY(0) scale(1);
+  }
+}
+
+@keyframes float {
+  0%,
+  100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-12px);
   }
 }
 

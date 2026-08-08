@@ -11,18 +11,20 @@ interface ButtonProps extends ButtonHTMLAttributes<HTMLButtonElement> {
 
 const variantClasses: Record<Variant, string> = {
   primary:
-    "bg-sky-500 text-white hover:bg-sky-600 shadow-md shadow-sky-500/20",
+    "bg-gradient-to-br from-sky-400 to-sky-500 text-navy-950 hover:from-sky-300 hover:to-sky-400 shadow-lg shadow-sky-500/25 focus-visible:ring-sky-400/50",
   secondary:
-    "bg-navy-700 text-white hover:bg-navy-600 border border-navy-600",
-  ghost: "text-navy-200 hover:bg-white/5",
-  success: "bg-emerald-500 text-white hover:bg-emerald-600 shadow-md shadow-emerald-500/20",
-  danger: "bg-rose-500 text-white hover:bg-rose-600 shadow-md shadow-rose-500/20",
+    "bg-navy-800 text-white hover:bg-navy-700 border border-white/10 focus-visible:ring-navy-400/40",
+  ghost: "text-navy-200 hover:bg-white/5 hover:text-white focus-visible:ring-white/20",
+  success:
+    "bg-gradient-to-br from-emerald-400 to-emerald-500 text-navy-950 hover:from-emerald-300 hover:to-emerald-400 shadow-lg shadow-emerald-500/25 focus-visible:ring-emerald-400/50",
+  danger:
+    "bg-gradient-to-br from-rose-400 to-rose-500 text-navy-950 hover:from-rose-300 hover:to-rose-400 shadow-lg shadow-rose-500/25 focus-visible:ring-rose-400/50",
   outline:
-    "border border-navy-300 text-navy-100 hover:bg-white/5 bg-transparent",
+    "border border-white/15 text-navy-100 hover:bg-white/5 hover:border-white/25 bg-transparent focus-visible:ring-white/20",
 };
 
 const sizeClasses: Record<Size, string> = {
-  sm: "px-3 py-1.5 text-sm",
+  sm: "px-3.5 py-1.5 text-sm",
   md: "px-5 py-2.5 text-sm",
   lg: "px-6 py-3.5 text-base",
 };
@@ -36,7 +38,7 @@ export function Button({
 }: ButtonProps) {
   return (
     <button
-      className={`inline-flex items-center justify-center gap-2 rounded-xl font-semibold transition-all duration-200 active:scale-[0.98] disabled:cursor-not-allowed disabled:opacity-50 ${variantClasses[variant]} ${sizeClasses[size]} ${className}`}
+      className={`inline-flex items-center justify-center gap-2 rounded-xl font-semibold transition-all duration-200 outline-none focus-visible:ring-2 active:scale-[0.98] disabled:cursor-not-allowed disabled:opacity-50 ${variantClasses[variant]} ${sizeClasses[size]} ${className}`}
       {...props}
     >
       {children}

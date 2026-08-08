@@ -6,23 +6,23 @@ const statusConfig: Record<
 > = {
   Created: {
     label: "Solicitud creada",
-    classes: "bg-navy-100 text-navy-700 border-navy-200",
+    classes: "bg-navy-800/70 text-navy-100 border border-navy-700",
     dot: "bg-navy-500",
   },
   IdentityVerified: {
     label: "Identidad verificada",
-    classes: "bg-amber-100 text-amber-800 border-amber-200",
-    dot: "bg-amber-500",
+    classes: "bg-amber-500/15 text-amber-200 border border-amber-500/30",
+    dot: "bg-amber-400",
   },
   Authorized: {
     label: "Autorizada",
-    classes: "bg-emerald-100 text-emerald-800 border-emerald-200",
-    dot: "bg-emerald-500",
+    classes: "bg-emerald-500/15 text-emerald-200 border border-emerald-500/30",
+    dot: "bg-emerald-400",
   },
   Disputed: {
     label: "Disputada / bloqueada",
-    classes: "bg-rose-100 text-rose-800 border-rose-200",
-    dot: "bg-rose-500",
+    classes: "bg-rose-500/15 text-rose-200 border border-rose-500/30",
+    dot: "bg-rose-400",
   },
 };
 

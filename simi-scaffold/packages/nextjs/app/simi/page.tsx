@@ -7,6 +7,7 @@ import {
   useScaffoldReadContract,
   useScaffoldWriteContract,
 } from "~~/hooks/scaffold-eth";
+import { RainbowKitCustomConnectButton } from "~~/components/scaffold-eth";
 import { Navbar } from "~~/components/simi/Navbar";
 import { GeneralDashboard } from "~~/components/simi/pages/GeneralDashboard";
 import { HolderDashboard } from "~~/components/simi/pages/HolderDashboard";
@@ -579,6 +580,54 @@ const SimiPage = () => {
   return (
     <main className="min-h-screen px-0 py-0">
       <Navbar />
+
+      {!isConnected && (
+        <section className="mx-auto max-w-7xl px-4 py-10 sm:px-6">
+          <div className="overflow-hidden rounded-[32px] border border-white/10 bg-navy-900/80 p-8 shadow-card sm:p-10">
+            <div className="grid gap-10 lg:grid-cols-[1.2fr_0.8fr] lg:items-center">
+              <div className="space-y-6">
+                <div className="inline-flex items-center gap-2 rounded-full border border-sky-500/20 bg-sky-500/10 px-3 py-1 text-sm text-sky-200">
+                  Protección y trazabilidad de reposiciones SIM
+                </div>
+                <div>
+                  <h1 className="text-4xl font-semibold tracking-tight text-white sm:text-5xl">
+                    SIMI: control seguro para reposiciones de tarjetas SIM
+                  </h1>
+                  <p className="mt-5 max-w-2xl text-base text-navy-300 sm:text-lg">
+                    Conecta tu wallet para ver tu rol on-chain, supervisar solicitudes
+                    y proteger cada reposición con verificaciones de identidad.
+                  </p>
+                </div>
+                <div className="flex flex-col gap-4 sm:flex-row sm:items-center">
+                  <RainbowKitCustomConnectButton />
+                  <div className="rounded-3xl border border-white/10 bg-navy-950/80 px-4 py-3 text-sm text-navy-300">
+                    Activa tu wallet en Arbitrum Sepolia para comenzar.
+                  </div>
+                </div>
+              </div>
+
+              <div className="relative rounded-[28px] bg-navy-950/80 p-6 shadow-card">
+                <div className="absolute inset-x-0 top-0 h-1 rounded-t-3xl bg-gradient-to-r from-sky-400 via-cyan-300 to-emerald-300" />
+                <div className="space-y-4 pt-5">
+                  <div className="rounded-3xl border border-white/10 bg-navy-900/80 p-4">
+                    <p className="text-xs text-navy-400 uppercase tracking-[0.24em]">Visibilidad</p>
+                    <p className="mt-2 text-2xl font-semibold text-white">Flujo transparente de solicitudes</p>
+                  </div>
+                  <div className="rounded-3xl border border-white/10 bg-navy-900/80 p-4">
+                    <p className="text-xs text-navy-400 uppercase tracking-[0.24em]">Seguridad</p>
+                    <p className="mt-2 text-2xl font-semibold text-white">Roles on-chain y validaciones firmadas</p>
+                  </div>
+                  <div className="rounded-3xl border border-white/10 bg-navy-900/80 p-4">
+                    <p className="text-xs text-navy-400 uppercase tracking-[0.24em]">Control</p>
+                    <p className="mt-2 text-2xl font-semibold text-white">Decisión del titular y verificador</p>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </section>
+      )}
+
       <div className="space-y-10">
         <GeneralDashboard requests={requests} role={role} />
 
@@ -609,10 +658,10 @@ const SimiPage = () => {
 
         {isConnected && role === null && (
           <div className="mx-auto max-w-7xl px-4 sm:px-6">
-            <div className="rounded-3xl border border-warning bg-base-100 p-8 shadow-xl">
-              <h2 className="text-2xl font-bold text-warning">Wallet no autorizada</h2>
-              <p className="mt-3 text-base-content/70">
-                Esta wallet no tiene permisos dentro de SIMI. Cambia de wallet o solicita acceso a un operador/verificador/titular.
+            <div className="rounded-[28px] border border-white/10 bg-navy-900/80 p-8 shadow-card">
+              <h2 className="text-2xl font-semibold text-white">Wallet no autorizada</h2>
+              <p className="mt-3 text-base text-navy-300">
+                Esta wallet no tiene permisos dentro de SIMI. Cambia de wallet o solicita acceso a un operador, verificador o titular.
               </p>
             </div>
           </div>

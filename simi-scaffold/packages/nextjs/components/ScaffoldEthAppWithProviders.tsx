@@ -1,9 +1,12 @@
 "use client";
 
+"use client";
+
 import { useEffect, useState } from "react";
 import { RainbowKitProvider, darkTheme, lightTheme } from "@rainbow-me/rainbowkit";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { AppProgressBar as ProgressBar } from "next-nprogress-bar";
+import { usePathname } from "next/navigation";
 import { useTheme } from "next-themes";
 import { Toaster } from "react-hot-toast";
 import { WagmiProvider } from "wagmi";
@@ -13,12 +16,15 @@ import { BlockieAvatar } from "~~/components/scaffold-eth";
 import { wagmiConfig } from "~~/services/web3/wagmiConfig";
 
 const ScaffoldEthApp = ({ children }: { children: React.ReactNode }) => {
+  const pathname = usePathname();
+  const showDefaultShell = !pathname?.startsWith("/simi");
+
   return (
     <>
-      <div className={`flex flex-col min-h-screen `}>
-        <Header />
+      <div className="flex flex-col min-h-screen">
+        {showDefaultShell && <Header />}
         <main className="relative flex flex-col flex-1">{children}</main>
-        <Footer />
+        {showDefaultShell && <Footer />}
       </div>
       <Toaster />
     </>

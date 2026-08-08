@@ -14,10 +14,12 @@ interface DashboardHeaderProps {
 export function DashboardHeader({
   title,
   subtitle,
-  role = "Operator",
+  role,
   actions,
 }: DashboardHeaderProps) {
-  const { walletConnected, walletAddress } = useApp();
+  const { walletConnected, walletAddress, role: currentRole } = useApp();
+  const effectiveRole = role ?? currentRole;
+
   return (
     <div className="mb-6 flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
       <div>
@@ -32,7 +34,7 @@ export function DashboardHeader({
             <span className="font-mono text-sm text-navy-200">{walletAddress}</span>
           </div>
         )}
-        <RoleBadge role={role} />
+        <RoleBadge role={effectiveRole} />
       </div>
     </div>
   );

@@ -7,9 +7,6 @@ import { useApp } from "../context/AppContext";
 const links = [
   { to: "/", label: "Inicio" },
   { to: "/dashboard", label: "Dashboard" },
-  { to: "/operator", label: "Operador" },
-  { to: "/verifier", label: "Verificador" },
-  { to: "/holder", label: "Titular" },
 ];
 
 export function Navbar() {

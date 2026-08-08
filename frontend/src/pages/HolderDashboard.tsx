@@ -8,7 +8,7 @@ import {
   ArrowLeft,
   Clock,
 } from "lucide-react";
-import { useApp } from "../context/AppContext";
+import type { SimRequest } from "../types/request";
 import { DashboardHeader } from "../components/DashboardHeader";
 import { Button } from "../components/Button";
 import { StatusBadge } from "../components/StatusBadge";
@@ -18,10 +18,21 @@ import { abbreviateLineId, abbreviateWallet, formatDate, buildTimeline } from ".
 
 type View = "list" | "detail" | "authorized" | "blocked";
 
-export function HolderDashboard() {
-  const { requests, updateRequest } = useApp();
+interface HolderDashboardProps {
+  requests: SimRequest[];
+  onConfirm: (requestId: number) => void;
+  onDispute: (requestId: number) => void;
+}
+
+export function HolderDashboard({
+  requests,
+  onConfirm,
+  onDispute,
+}: HolderDashboardProps) {
   const [view, setView] = useState<View>("list");
   const [selectedId, setSelectedId] = useState<number | null>(null);
+  const [confirming, setConfirming] = useState(false);
+  const [disputing, setDisputing] = useState(false);
 
   const selected = requests.find((r) => r.id === selectedId);
 
@@ -35,19 +46,15 @@ export function HolderDashboard() {
 
   const handleConfirm = () => {
     if (!selected) return;
-    updateRequest(selected.id, {
-      holderConfirmed: true,
-      status: "Authorized",
-    });
+    onConfirm(selected.id);
+    setConfirming(false);
     setView("authorized");
   };
 
   const handleDispute = () => {
     if (!selected) return;
-    updateRequest(selected.id, {
-      disputed: true,
-      status: "Disputed",
-    });
+    onDispute(selected.id);
+    setDisputing(false);
     setView("blocked");
   };
 
@@ -316,7 +323,7 @@ export function HolderDashboard() {
                 variant="success"
                 size="lg"
                 className="flex-1"
-                onClick={handleConfirm}
+                onClick={() => setConfirming(true)}
               >
                 <CheckCircle2 className="h-5 w-5" />
                 Sí, confirmar
@@ -325,7 +332,7 @@ export function HolderDashboard() {
                 variant="danger"
                 size="lg"
                 className="flex-1"
-                onClick={handleDispute}
+                onClick={() => setDisputing(true)}
               >
                 <XCircle className="h-5 w-5" />
                 No reconozco esta solicitud
@@ -340,6 +347,60 @@ export function HolderDashboard() {
           </div>
         ) : null}
       </div>
+
+      {/* Confirm modal */}
+      {confirming && selected && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-navy-950/80 p-4 backdrop-blur-sm">
+          <div className="card-light w-full max-w-md p-6 animate-scale-in">
+            <h3 className="text-lg font-bold text-navy-900">
+              Confirmar y autorizar solicitud
+            </h3>
+            <p className="mt-4 text-sm text-navy-600">
+              Al confirmar, autorizas esta solicitud de reposición de SIM.
+              Confirma únicamente si reconoces la solicitud.
+            </p>
+            <div className="mt-6 flex gap-3">
+              <Button className="flex-1" onClick={handleConfirm}>
+                Confirmar y autorizar
+              </Button>
+              <Button
+                variant="outline"
+                className="flex-1"
+                onClick={() => setConfirming(false)}
+              >
+                Cancelar
+              </Button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Dispute modal */}
+      {disputing && selected && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-navy-950/80 p-4 backdrop-blur-sm">
+          <div className="card-light w-full max-w-md p-6 animate-scale-in">
+            <h3 className="text-lg font-bold text-navy-900">
+              Disputar solicitud
+            </h3>
+            <p className="mt-4 text-sm text-navy-600">
+              Al disputar, esta solicitud será marcada como disputada/bloqueada.
+              Solo disputa si no reconoces la solicitud.
+            </p>
+            <div className="mt-6 flex gap-3">
+              <Button variant="danger" className="flex-1" onClick={handleDispute}>
+                Disputar y bloquear
+              </Button>
+              <Button
+                variant="outline"
+                className="flex-1"
+                onClick={() => setDisputing(false)}
+              >
+                Cancelar
+              </Button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }

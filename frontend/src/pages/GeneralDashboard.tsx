@@ -4,13 +4,16 @@ import {
   AlertTriangle,
   FileText,
 } from "lucide-react";
-import { useApp } from "../context/AppContext";
+import type { SimRequest, Role } from "../types/request";
 import { DashboardHeader } from "../components/DashboardHeader";
 import { RequestCard } from "../components/RequestCard";
 
-export function GeneralDashboard() {
-  const { role, requests } = useApp();
+interface GeneralDashboardProps {
+  requests: SimRequest[];
+  role?: Role;
+}
 
+export function GeneralDashboard({ requests, role }: GeneralDashboardProps) {
   const active = requests.filter(
     (r) => r.status !== "Authorized" && r.status !== "Disputed"
   ).length;

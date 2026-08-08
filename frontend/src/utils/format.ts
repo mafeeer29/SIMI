@@ -22,34 +22,22 @@ export function formatDate(iso: string): string {
 }
 
 export function buildTimeline(req: SimRequest): TimelineStep[] {
-  const steps: TimelineStep[] = [
+  if (req.disputed) {
+    return [
+      { label: "Solicitud creada", state: "completed" },
+      { label: "Disputada / bloqueada", state: "completed" },
+    ];
+  }
+
+  return [
     { label: "Solicitud creada", state: "completed" },
     {
       label: "Identidad verificada",
       state: req.identityVerified ? "completed" : "current",
     },
     {
-      label: "Confirmación del titular",
-      state: req.holderConfirmed
-        ? "completed"
-        : req.identityVerified && !req.disputed
-        ? "current"
-        : "pending",
-    },
-    {
-      label: req.disputed ? "Disputada / bloqueada" : "Autorización final",
-      state: req.disputed
-        ? "completed"
-        : req.holderConfirmed
-        ? "completed"
-        : "pending",
+      label: "Autorizada",
+      state: req.status === "Authorized" ? "completed" : "pending",
     },
   ];
-
-  if (req.disputed) {
-    steps[2].state = "completed";
-    steps[2].label = "Disputada";
-  }
-
-  return steps;
 }

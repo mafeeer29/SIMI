@@ -1,14 +1,23 @@
 import { useState } from "react";
 import { ShieldCheck, CheckCircle2, FileCheck } from "lucide-react";
-import { useApp } from "../context/AppContext";
+import type { SimRequest, Role } from "../types/request";
 import { DashboardHeader } from "../components/DashboardHeader";
 import { Button } from "../components/Button";
 import { StatusBadge } from "../components/StatusBadge";
 import { StateIllustration } from "../components/StateIllustration";
 import { abbreviateLineId, abbreviateWallet, formatDate } from "../utils/format";
 
-export function VerifierDashboard() {
-  const { role, requests, updateRequest } = useApp();
+interface VerifierDashboardProps {
+  requests: SimRequest[];
+  role?: Role;
+  onVerifyIdentity: (requestId: number) => void;
+}
+
+export function VerifierDashboard({
+  requests,
+  role,
+  onVerifyIdentity,
+}: VerifierDashboardProps) {
   const [selectedId, setSelectedId] = useState<number | null>(null);
   const [verifying, setVerifying] = useState(false);
   const [done, setDone] = useState<number | null>(null);
@@ -20,10 +29,7 @@ export function VerifierDashboard() {
     if (!selected) return;
     setVerifying(true);
     setTimeout(() => {
-      updateRequest(selected.id, {
-        identityVerified: true,
-        status: "IdentityVerified",
-      });
+      onVerifyIdentity(selected.id);
       setVerifying(false);
       setDone(selected.id);
       setTimeout(() => {

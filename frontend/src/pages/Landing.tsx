@@ -70,7 +70,7 @@ export function Landing() {
                 Conectar Wallet
                 <ArrowRight className="h-5 w-5" />
               </Button>
-              <Link to="/holder">
+              <Link to="/dashboard">
                 <Button size="lg" variant="outline">
                   Cómo funciona
                 </Button>

@@ -30,9 +30,9 @@ export function AppProvider({ children }: { children: ReactNode }) {
   const [walletAddress] = useState<string>(DEFAULT_WALLET);
 
   const role = useMemo<Role>(() => {
-    const entry = mockWallets[walletAddress];
-    return entry ? entry.role : "Operator";
-  }, [walletAddress]);
+    if (!walletConnected) return null;
+    return mockWallets[walletAddress]?.role ?? null;
+  }, [walletAddress, walletConnected]);
 
   const value = useMemo<AppContextValue>(() => {
     const addRequest = ({ lineId, holder }: CreateRequestInput) => {

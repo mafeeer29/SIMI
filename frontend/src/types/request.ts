@@ -4,7 +4,7 @@ export type RequestStatus =
   | "Authorized"
   | "Disputed";
 
-export type Role = "Operator" | "Verifier" | "Holder";
+export type Role = "Operator" | "Verifier" | "Holder" | null;
 
 export interface SimRequest {
   id: number;

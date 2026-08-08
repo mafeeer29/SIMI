@@ -1,12 +1,23 @@
 import { useState, type FormEvent } from "react";
 import { Plus, X, Radio, CheckCircle2 } from "lucide-react";
-import { useApp } from "../context/AppContext";
+import type { SimRequest, CreateRequestInput, Role } from "../types/request";
 import { DashboardHeader } from "../components/DashboardHeader";
 import { Button } from "../components/Button";
 import { RequestCard } from "../components/RequestCard";
 
-export function OperatorDashboard() {
-  const { role, requests, addRequest } = useApp();
+interface OperatorDashboardProps {
+  requests: SimRequest[];
+  role?: Role;
+  onCreateRequest: (input: CreateRequestInput) => void;
+  onSelectRequest: (requestId: number) => void;
+}
+
+export function OperatorDashboard({
+  requests,
+  role,
+  onCreateRequest,
+  onSelectRequest,
+}: OperatorDashboardProps) {
   const [showModal, setShowModal] = useState(false);
   const [lineId, setLineId] = useState("");
   const [holder, setHolder] = useState("");
@@ -16,7 +27,7 @@ export function OperatorDashboard() {
     e.preventDefault();
     if (!lineId.trim() || !holder.trim()) return;
     const nextId = Math.max(0, ...requests.map((r) => r.id)) + 1;
-    addRequest({ lineId: lineId.trim(), holder: holder.trim() });
+    onCreateRequest({ lineId: lineId.trim(), holder: holder.trim() });
     setJustCreated(nextId);
     setLineId("");
     setHolder("");
@@ -47,7 +58,11 @@ export function OperatorDashboard() {
 
       <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
         {requests.map((req) => (
-          <RequestCard key={req.id} req={req} />
+          <RequestCard
+            key={req.id}
+            req={req}
+            onClick={onSelectRequest}
+          />
         ))}
       </div>
 

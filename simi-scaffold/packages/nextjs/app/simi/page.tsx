@@ -202,20 +202,13 @@ export default function SimiPage() {
       ],
     });
 
-  const { data: holderAddress } =
-    useScaffoldReadContract({
-      contractName: "SIMI",
-      functionName: "lineHolders",
-      args: [
-        SIMI_DEMO_LINE_ID,
-      ],
-    });
-
   const isHolder =
-    !!address &&
-    !!holderAddress &&
-    address.toLowerCase() ===
-      String(holderAddress).toLowerCase();
+  !!address &&
+  requests.some(
+    request =>
+      request.holder.toLowerCase() ===
+      address.toLowerCase(),
+  );
 
   const role: Role =
     isOperator

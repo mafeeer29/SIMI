@@ -1,0 +1,9 @@
+
+SIMI V1 - GAS REPORT
+====================
+createRequest gas used: 169616
+verifyIdentity gas used: 50195
+confirmRequest gas used: 36486
+
+TOTAL V1 gas used: 256297
+Transactions in normal V1 flow: 3

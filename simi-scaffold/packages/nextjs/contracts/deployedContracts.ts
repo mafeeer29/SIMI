@@ -5,563 +5,9 @@
 import { GenericContractsDeclaration } from "~~/utils/scaffold-eth/contract";
 
 const deployedContracts = {
-  31337: {
-    SIMI: {
-      address: "0x5fbdb2315678afecb367f032d93f642f64180aa3",
-      abi: [
-        {
-          inputs: [],
-          stateMutability: "nonpayable",
-          type: "constructor",
-        },
-        {
-          inputs: [],
-          name: "AccessControlBadConfirmation",
-          type: "error",
-        },
-        {
-          inputs: [
-            {
-              internalType: "address",
-              name: "account",
-              type: "address",
-            },
-            {
-              internalType: "bytes32",
-              name: "neededRole",
-              type: "bytes32",
-            },
-          ],
-          name: "AccessControlUnauthorizedAccount",
-          type: "error",
-        },
-        {
-          anonymous: false,
-          inputs: [
-            {
-              indexed: true,
-              internalType: "uint256",
-              name: "requestId",
-              type: "uint256",
-            },
-            {
-              indexed: true,
-              internalType: "address",
-              name: "holder",
-              type: "address",
-            },
-          ],
-          name: "HolderConfirmed",
-          type: "event",
-        },
-        {
-          anonymous: false,
-          inputs: [
-            {
-              indexed: true,
-              internalType: "uint256",
-              name: "requestId",
-              type: "uint256",
-            },
-            {
-              indexed: true,
-              internalType: "address",
-              name: "verifier",
-              type: "address",
-            },
-          ],
-          name: "IdentityVerified",
-          type: "event",
-        },
-        {
-          anonymous: false,
-          inputs: [
-            {
-              indexed: true,
-              internalType: "bytes32",
-              name: "lineId",
-              type: "bytes32",
-            },
-            {
-              indexed: true,
-              internalType: "address",
-              name: "holder",
-              type: "address",
-            },
-          ],
-          name: "LineRegistered",
-          type: "event",
-        },
-        {
-          anonymous: false,
-          inputs: [
-            {
-              indexed: true,
-              internalType: "uint256",
-              name: "requestId",
-              type: "uint256",
-            },
-          ],
-          name: "RequestAuthorized",
-          type: "event",
-        },
-        {
-          anonymous: false,
-          inputs: [
-            {
-              indexed: true,
-              internalType: "uint256",
-              name: "requestId",
-              type: "uint256",
-            },
-            {
-              indexed: true,
-              internalType: "bytes32",
-              name: "lineId",
-              type: "bytes32",
-            },
-            {
-              indexed: true,
-              internalType: "address",
-              name: "operator",
-              type: "address",
-            },
-            {
-              indexed: false,
-              internalType: "address",
-              name: "holder",
-              type: "address",
-            },
-          ],
-          name: "RequestCreated",
-          type: "event",
-        },
-        {
-          anonymous: false,
-          inputs: [
-            {
-              indexed: true,
-              internalType: "uint256",
-              name: "requestId",
-              type: "uint256",
-            },
-            {
-              indexed: true,
-              internalType: "address",
-              name: "holder",
-              type: "address",
-            },
-          ],
-          name: "RequestDisputed",
-          type: "event",
-        },
-        {
-          anonymous: false,
-          inputs: [
-            {
-              indexed: true,
-              internalType: "bytes32",
-              name: "role",
-              type: "bytes32",
-            },
-            {
-              indexed: true,
-              internalType: "bytes32",
-              name: "previousAdminRole",
-              type: "bytes32",
-            },
-            {
-              indexed: true,
-              internalType: "bytes32",
-              name: "newAdminRole",
-              type: "bytes32",
-            },
-          ],
-          name: "RoleAdminChanged",
-          type: "event",
-        },
-        {
-          anonymous: false,
-          inputs: [
-            {
-              indexed: true,
-              internalType: "bytes32",
-              name: "role",
-              type: "bytes32",
-            },
-            {
-              indexed: true,
-              internalType: "address",
-              name: "account",
-              type: "address",
-            },
-            {
-              indexed: true,
-              internalType: "address",
-              name: "sender",
-              type: "address",
-            },
-          ],
-          name: "RoleGranted",
-          type: "event",
-        },
-        {
-          anonymous: false,
-          inputs: [
-            {
-              indexed: true,
-              internalType: "bytes32",
-              name: "role",
-              type: "bytes32",
-            },
-            {
-              indexed: true,
-              internalType: "address",
-              name: "account",
-              type: "address",
-            },
-            {
-              indexed: true,
-              internalType: "address",
-              name: "sender",
-              type: "address",
-            },
-          ],
-          name: "RoleRevoked",
-          type: "event",
-        },
-        {
-          inputs: [],
-          name: "DEFAULT_ADMIN_ROLE",
-          outputs: [
-            {
-              internalType: "bytes32",
-              name: "",
-              type: "bytes32",
-            },
-          ],
-          stateMutability: "view",
-          type: "function",
-        },
-        {
-          inputs: [],
-          name: "OPERATOR_ROLE",
-          outputs: [
-            {
-              internalType: "bytes32",
-              name: "",
-              type: "bytes32",
-            },
-          ],
-          stateMutability: "view",
-          type: "function",
-        },
-        {
-          inputs: [],
-          name: "VERIFIER_ROLE",
-          outputs: [
-            {
-              internalType: "bytes32",
-              name: "",
-              type: "bytes32",
-            },
-          ],
-          stateMutability: "view",
-          type: "function",
-        },
-        {
-          inputs: [
-            {
-              internalType: "uint256",
-              name: "requestId",
-              type: "uint256",
-            },
-          ],
-          name: "confirmRequest",
-          outputs: [],
-          stateMutability: "nonpayable",
-          type: "function",
-        },
-        {
-          inputs: [
-            {
-              internalType: "bytes32",
-              name: "lineId",
-              type: "bytes32",
-            },
-          ],
-          name: "createRequest",
-          outputs: [
-            {
-              internalType: "uint256",
-              name: "",
-              type: "uint256",
-            },
-          ],
-          stateMutability: "nonpayable",
-          type: "function",
-        },
-        {
-          inputs: [
-            {
-              internalType: "uint256",
-              name: "requestId",
-              type: "uint256",
-            },
-          ],
-          name: "disputeRequest",
-          outputs: [],
-          stateMutability: "nonpayable",
-          type: "function",
-        },
-        {
-          inputs: [
-            {
-              internalType: "uint256",
-              name: "requestId",
-              type: "uint256",
-            },
-          ],
-          name: "getRequest",
-          outputs: [
-            {
-              components: [
-                {
-                  internalType: "uint256",
-                  name: "id",
-                  type: "uint256",
-                },
-                {
-                  internalType: "bytes32",
-                  name: "lineId",
-                  type: "bytes32",
-                },
-                {
-                  internalType: "address",
-                  name: "operatorAddress",
-                  type: "address",
-                },
-                {
-                  internalType: "address",
-                  name: "holder",
-                  type: "address",
-                },
-                {
-                  internalType: "uint256",
-                  name: "createdAt",
-                  type: "uint256",
-                },
-                {
-                  internalType: "bool",
-                  name: "identityVerified",
-                  type: "bool",
-                },
-                {
-                  internalType: "bool",
-                  name: "holderConfirmed",
-                  type: "bool",
-                },
-                {
-                  internalType: "bool",
-                  name: "disputed",
-                  type: "bool",
-                },
-                {
-                  internalType: "enum SIMI.RequestStatus",
-                  name: "status",
-                  type: "uint8",
-                },
-              ],
-              internalType: "struct SIMI.SimRequest",
-              name: "",
-              type: "tuple",
-            },
-          ],
-          stateMutability: "view",
-          type: "function",
-        },
-        {
-          inputs: [
-            {
-              internalType: "bytes32",
-              name: "role",
-              type: "bytes32",
-            },
-          ],
-          name: "getRoleAdmin",
-          outputs: [
-            {
-              internalType: "bytes32",
-              name: "",
-              type: "bytes32",
-            },
-          ],
-          stateMutability: "view",
-          type: "function",
-        },
-        {
-          inputs: [
-            {
-              internalType: "bytes32",
-              name: "role",
-              type: "bytes32",
-            },
-            {
-              internalType: "address",
-              name: "account",
-              type: "address",
-            },
-          ],
-          name: "grantRole",
-          outputs: [],
-          stateMutability: "nonpayable",
-          type: "function",
-        },
-        {
-          inputs: [
-            {
-              internalType: "bytes32",
-              name: "role",
-              type: "bytes32",
-            },
-            {
-              internalType: "address",
-              name: "account",
-              type: "address",
-            },
-          ],
-          name: "hasRole",
-          outputs: [
-            {
-              internalType: "bool",
-              name: "",
-              type: "bool",
-            },
-          ],
-          stateMutability: "view",
-          type: "function",
-        },
-        {
-          inputs: [
-            {
-              internalType: "bytes32",
-              name: "",
-              type: "bytes32",
-            },
-          ],
-          name: "lineHolders",
-          outputs: [
-            {
-              internalType: "address",
-              name: "",
-              type: "address",
-            },
-          ],
-          stateMutability: "view",
-          type: "function",
-        },
-        {
-          inputs: [
-            {
-              internalType: "bytes32",
-              name: "lineId",
-              type: "bytes32",
-            },
-            {
-              internalType: "address",
-              name: "holder",
-              type: "address",
-            },
-          ],
-          name: "registerLine",
-          outputs: [],
-          stateMutability: "nonpayable",
-          type: "function",
-        },
-        {
-          inputs: [
-            {
-              internalType: "bytes32",
-              name: "role",
-              type: "bytes32",
-            },
-            {
-              internalType: "address",
-              name: "callerConfirmation",
-              type: "address",
-            },
-          ],
-          name: "renounceRole",
-          outputs: [],
-          stateMutability: "nonpayable",
-          type: "function",
-        },
-        {
-          inputs: [
-            {
-              internalType: "bytes32",
-              name: "role",
-              type: "bytes32",
-            },
-            {
-              internalType: "address",
-              name: "account",
-              type: "address",
-            },
-          ],
-          name: "revokeRole",
-          outputs: [],
-          stateMutability: "nonpayable",
-          type: "function",
-        },
-        {
-          inputs: [
-            {
-              internalType: "bytes4",
-              name: "interfaceId",
-              type: "bytes4",
-            },
-          ],
-          name: "supportsInterface",
-          outputs: [
-            {
-              internalType: "bool",
-              name: "",
-              type: "bool",
-            },
-          ],
-          stateMutability: "view",
-          type: "function",
-        },
-        {
-          inputs: [
-            {
-              internalType: "uint256",
-              name: "requestId",
-              type: "uint256",
-            },
-          ],
-          name: "verifyIdentity",
-          outputs: [],
-          stateMutability: "nonpayable",
-          type: "function",
-        },
-      ],
-      inheritedFunctions: {
-        DEFAULT_ADMIN_ROLE: "npm/@openzeppelin/contracts@5.6.1/access/AccessControl.sol",
-        getRoleAdmin: "npm/@openzeppelin/contracts@5.6.1/access/AccessControl.sol",
-        grantRole: "npm/@openzeppelin/contracts@5.6.1/access/AccessControl.sol",
-        hasRole: "npm/@openzeppelin/contracts@5.6.1/access/AccessControl.sol",
-        renounceRole: "npm/@openzeppelin/contracts@5.6.1/access/AccessControl.sol",
-        revokeRole: "npm/@openzeppelin/contracts@5.6.1/access/AccessControl.sol",
-        supportsInterface: "npm/@openzeppelin/contracts@5.6.1/access/AccessControl.sol",
-      },
-      deployedOnBlock: 1,
-    },
-  },
   421614: {
     SIMI: {
-      address: "0xaabbd218dcf09dd105323b68047ccf0a1f55b9f6",
+      address: "0xc06c111884603745d33476a671ea88183a939da6",
       abi: [
         {
           inputs: [],
@@ -590,41 +36,52 @@ const deployedContracts = {
           type: "error",
         },
         {
-          anonymous: false,
+          inputs: [],
+          name: "ECDSAInvalidSignature",
+          type: "error",
+        },
+        {
           inputs: [
             {
-              indexed: true,
               internalType: "uint256",
-              name: "requestId",
+              name: "length",
               type: "uint256",
             },
+          ],
+          name: "ECDSAInvalidSignatureLength",
+          type: "error",
+        },
+        {
+          inputs: [
             {
-              indexed: true,
-              internalType: "address",
-              name: "holder",
-              type: "address",
+              internalType: "bytes32",
+              name: "s",
+              type: "bytes32",
             },
           ],
-          name: "HolderConfirmed",
-          type: "event",
+          name: "ECDSAInvalidSignatureS",
+          type: "error",
+        },
+        {
+          inputs: [],
+          name: "InvalidShortString",
+          type: "error",
+        },
+        {
+          inputs: [
+            {
+              internalType: "string",
+              name: "str",
+              type: "string",
+            },
+          ],
+          name: "StringTooLong",
+          type: "error",
         },
         {
           anonymous: false,
-          inputs: [
-            {
-              indexed: true,
-              internalType: "uint256",
-              name: "requestId",
-              type: "uint256",
-            },
-            {
-              indexed: true,
-              internalType: "address",
-              name: "verifier",
-              type: "address",
-            },
-          ],
-          name: "IdentityVerified",
+          inputs: [],
+          name: "EIP712DomainChanged",
           type: "event",
         },
         {
@@ -651,22 +108,9 @@ const deployedContracts = {
           inputs: [
             {
               indexed: true,
-              internalType: "uint256",
+              internalType: "bytes32",
               name: "requestId",
-              type: "uint256",
-            },
-          ],
-          name: "RequestAuthorized",
-          type: "event",
-        },
-        {
-          anonymous: false,
-          inputs: [
-            {
-              indexed: true,
-              internalType: "uint256",
-              name: "requestId",
-              type: "uint256",
+              type: "bytes32",
             },
             {
               indexed: true,
@@ -677,17 +121,23 @@ const deployedContracts = {
             {
               indexed: true,
               internalType: "address",
-              name: "operator",
+              name: "holder",
               type: "address",
             },
             {
               indexed: false,
               internalType: "address",
-              name: "holder",
+              name: "operatorAddress",
+              type: "address",
+            },
+            {
+              indexed: false,
+              internalType: "address",
+              name: "verifierAddress",
               type: "address",
             },
           ],
-          name: "RequestCreated",
+          name: "RequestAuthorized",
           type: "event",
         },
         {
@@ -695,9 +145,15 @@ const deployedContracts = {
           inputs: [
             {
               indexed: true,
-              internalType: "uint256",
+              internalType: "bytes32",
               name: "requestId",
-              type: "uint256",
+              type: "bytes32",
+            },
+            {
+              indexed: true,
+              internalType: "bytes32",
+              name: "lineId",
+              type: "bytes32",
             },
             {
               indexed: true,
@@ -786,7 +242,33 @@ const deployedContracts = {
         },
         {
           inputs: [],
+          name: "APPROVAL_TYPEHASH",
+          outputs: [
+            {
+              internalType: "bytes32",
+              name: "",
+              type: "bytes32",
+            },
+          ],
+          stateMutability: "view",
+          type: "function",
+        },
+        {
+          inputs: [],
           name: "DEFAULT_ADMIN_ROLE",
+          outputs: [
+            {
+              internalType: "bytes32",
+              name: "",
+              type: "bytes32",
+            },
+          ],
+          stateMutability: "view",
+          type: "function",
+        },
+        {
+          inputs: [],
+          name: "DISPUTE_TYPEHASH",
           outputs: [
             {
               internalType: "bytes32",
@@ -826,31 +308,44 @@ const deployedContracts = {
         {
           inputs: [
             {
-              internalType: "bytes32",
-              name: "",
-              type: "bytes32",
+              components: [
+                {
+                  internalType: "bytes32",
+                  name: "requestId",
+                  type: "bytes32",
+                },
+                {
+                  internalType: "bytes32",
+                  name: "lineId",
+                  type: "bytes32",
+                },
+                {
+                  internalType: "uint256",
+                  name: "deadline",
+                  type: "uint256",
+                },
+              ],
+              internalType: "struct SIMI.AuthorizationData",
+              name: "data",
+              type: "tuple",
             },
-          ],
-          name: "activeRequestByLine",
-          outputs: [
             {
-              internalType: "uint256",
-              name: "",
-              type: "uint256",
+              internalType: "bytes",
+              name: "operatorSignature",
+              type: "bytes",
             },
-          ],
-          stateMutability: "view",
-          type: "function",
-        },
-        {
-          inputs: [
             {
-              internalType: "uint256",
-              name: "requestId",
-              type: "uint256",
+              internalType: "bytes",
+              name: "verifierSignature",
+              type: "bytes",
+            },
+            {
+              internalType: "bytes",
+              name: "holderSignature",
+              type: "bytes",
             },
           ],
-          name: "confirmRequest",
+          name: "authorizeRequest",
           outputs: [],
           stateMutability: "nonpayable",
           type: "function",
@@ -858,28 +353,31 @@ const deployedContracts = {
         {
           inputs: [
             {
-              internalType: "bytes32",
-              name: "lineId",
-              type: "bytes32",
+              components: [
+                {
+                  internalType: "bytes32",
+                  name: "requestId",
+                  type: "bytes32",
+                },
+                {
+                  internalType: "bytes32",
+                  name: "lineId",
+                  type: "bytes32",
+                },
+                {
+                  internalType: "uint256",
+                  name: "deadline",
+                  type: "uint256",
+                },
+              ],
+              internalType: "struct SIMI.AuthorizationData",
+              name: "data",
+              type: "tuple",
             },
-          ],
-          name: "createRequest",
-          outputs: [
             {
-              internalType: "uint256",
-              name: "",
-              type: "uint256",
-            },
-          ],
-          stateMutability: "nonpayable",
-          type: "function",
-        },
-        {
-          inputs: [
-            {
-              internalType: "uint256",
-              name: "requestId",
-              type: "uint256",
+              internalType: "bytes",
+              name: "holderSignature",
+              type: "bytes",
             },
           ],
           name: "disputeRequest",
@@ -888,11 +386,131 @@ const deployedContracts = {
           type: "function",
         },
         {
-          inputs: [
+          inputs: [],
+          name: "eip712Domain",
+          outputs: [
+            {
+              internalType: "bytes1",
+              name: "fields",
+              type: "bytes1",
+            },
+            {
+              internalType: "string",
+              name: "name",
+              type: "string",
+            },
+            {
+              internalType: "string",
+              name: "version",
+              type: "string",
+            },
             {
               internalType: "uint256",
-              name: "requestId",
+              name: "chainId",
               type: "uint256",
+            },
+            {
+              internalType: "address",
+              name: "verifyingContract",
+              type: "address",
+            },
+            {
+              internalType: "bytes32",
+              name: "salt",
+              type: "bytes32",
+            },
+            {
+              internalType: "uint256[]",
+              name: "extensions",
+              type: "uint256[]",
+            },
+          ],
+          stateMutability: "view",
+          type: "function",
+        },
+        {
+          inputs: [
+            {
+              internalType: "bytes32",
+              name: "",
+              type: "bytes32",
+            },
+          ],
+          name: "finalizedRequests",
+          outputs: [
+            {
+              internalType: "bool",
+              name: "",
+              type: "bool",
+            },
+          ],
+          stateMutability: "view",
+          type: "function",
+        },
+        {
+          inputs: [
+            {
+              internalType: "bytes32",
+              name: "requestId",
+              type: "bytes32",
+            },
+            {
+              internalType: "bytes32",
+              name: "lineId",
+              type: "bytes32",
+            },
+            {
+              internalType: "uint256",
+              name: "deadline",
+              type: "uint256",
+            },
+          ],
+          name: "getApprovalDigest",
+          outputs: [
+            {
+              internalType: "bytes32",
+              name: "",
+              type: "bytes32",
+            },
+          ],
+          stateMutability: "view",
+          type: "function",
+        },
+        {
+          inputs: [
+            {
+              internalType: "bytes32",
+              name: "requestId",
+              type: "bytes32",
+            },
+            {
+              internalType: "bytes32",
+              name: "lineId",
+              type: "bytes32",
+            },
+            {
+              internalType: "uint256",
+              name: "deadline",
+              type: "uint256",
+            },
+          ],
+          name: "getDisputeDigest",
+          outputs: [
+            {
+              internalType: "bytes32",
+              name: "",
+              type: "bytes32",
+            },
+          ],
+          stateMutability: "view",
+          type: "function",
+        },
+        {
+          inputs: [
+            {
+              internalType: "bytes32",
+              name: "requestId",
+              type: "bytes32",
             },
           ],
           name: "getRequest",
@@ -900,9 +518,9 @@ const deployedContracts = {
             {
               components: [
                 {
-                  internalType: "uint256",
-                  name: "id",
-                  type: "uint256",
+                  internalType: "bytes32",
+                  name: "requestId",
+                  type: "bytes32",
                 },
                 {
                   internalType: "bytes32",
@@ -916,28 +534,18 @@ const deployedContracts = {
                 },
                 {
                   internalType: "address",
+                  name: "verifierAddress",
+                  type: "address",
+                },
+                {
+                  internalType: "address",
                   name: "holder",
                   type: "address",
                 },
                 {
                   internalType: "uint256",
-                  name: "createdAt",
+                  name: "finalizedAt",
                   type: "uint256",
-                },
-                {
-                  internalType: "bool",
-                  name: "identityVerified",
-                  type: "bool",
-                },
-                {
-                  internalType: "bool",
-                  name: "holderConfirmed",
-                  type: "bool",
-                },
-                {
-                  internalType: "bool",
-                  name: "disputed",
-                  type: "bool",
                 },
                 {
                   internalType: "enum SIMI.RequestStatus",
@@ -1047,19 +655,6 @@ const deployedContracts = {
           type: "function",
         },
         {
-          inputs: [],
-          name: "nextRequestId",
-          outputs: [
-            {
-              internalType: "uint256",
-              name: "",
-              type: "uint256",
-            },
-          ],
-          stateMutability: "view",
-          type: "function",
-        },
-        {
           inputs: [
             {
               internalType: "bytes32",
@@ -1093,6 +688,19 @@ const deployedContracts = {
           name: "renounceRole",
           outputs: [],
           stateMutability: "nonpayable",
+          type: "function",
+        },
+        {
+          inputs: [],
+          name: "requestCount",
+          outputs: [
+            {
+              internalType: "uint256",
+              name: "",
+              type: "uint256",
+            },
+          ],
+          stateMutability: "view",
           type: "function",
         },
         {
@@ -1132,19 +740,6 @@ const deployedContracts = {
           stateMutability: "view",
           type: "function",
         },
-        {
-          inputs: [
-            {
-              internalType: "uint256",
-              name: "requestId",
-              type: "uint256",
-            },
-          ],
-          name: "verifyIdentity",
-          outputs: [],
-          stateMutability: "nonpayable",
-          type: "function",
-        },
       ],
       inheritedFunctions: {
         DEFAULT_ADMIN_ROLE: "npm/@openzeppelin/contracts@5.6.1/access/AccessControl.sol",
@@ -1154,8 +749,9 @@ const deployedContracts = {
         renounceRole: "npm/@openzeppelin/contracts@5.6.1/access/AccessControl.sol",
         revokeRole: "npm/@openzeppelin/contracts@5.6.1/access/AccessControl.sol",
         supportsInterface: "npm/@openzeppelin/contracts@5.6.1/access/AccessControl.sol",
+        eip712Domain: "npm/@openzeppelin/contracts@5.6.1/utils/cryptography/EIP712.sol",
       },
-      deployedOnBlock: 295842520,
+      deployedOnBlock: 297323530,
     },
   },
 } as const;

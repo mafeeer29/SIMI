@@ -1,0 +1,6 @@
+
+      SIMI V2 - GAS REPORT
+      ====================
+      authorizeRequest gas used: 249637
+      Transactions in normal V2 flow: 1
+      

@@ -2,20 +2,21 @@
 pragma solidity ^0.8.20;
 
 import "@openzeppelin/contracts/access/AccessControl.sol";
+import "@openzeppelin/contracts/utils/cryptography/EIP712.sol";
+import "@openzeppelin/contracts/utils/cryptography/ECDSA.sol";
 
 /**
  * @title SIMI
  * @notice Capa de autorización y trazabilidad para solicitudes
  *         de reemplazo de SIM.
  *
- * @dev El contrato NO almacena números telefónicos, DNI,
- *      biometría ni otros datos personales.
- *
- *      La verificación de identidad ocurre fuera de la blockchain.
- *      Un verificador autorizado únicamente registra que dicha
- *      verificación fue realizada correctamente.
+ * @dev V2:
+ *      - Los datos personales permanecen off-chain.
+ *      - Operadora, verificador y titular firman off-chain.
+ *      - Solo el resultado crítico se registra on-chain.
+ *      - El flujo normal requiere una única transacción.
  */
-contract SIMI is AccessControl {
+contract SIMI is AccessControl, EIP712 {
     /*//////////////////////////////////////////////////////////////
                                 ROLES
     //////////////////////////////////////////////////////////////*/
@@ -31,8 +32,7 @@ contract SIMI is AccessControl {
     //////////////////////////////////////////////////////////////*/
 
     enum RequestStatus {
-        Created,
-        IdentityVerified,
+        None,
         Authorized,
         Disputed
     }
@@ -42,44 +42,60 @@ contract SIMI is AccessControl {
     //////////////////////////////////////////////////////////////*/
 
     struct SimRequest {
-        uint256 id;
+        bytes32 requestId;
         bytes32 lineId;
         address operatorAddress;
+        address verifierAddress;
         address holder;
-        uint256 createdAt;
-        bool identityVerified;
-        bool holderConfirmed;
-        bool disputed;
+        uint256 finalizedAt;
         RequestStatus status;
     }
+
+    struct AuthorizationData {
+        bytes32 requestId;
+        bytes32 lineId;
+        uint256 deadline;
+    }
+
+    /*//////////////////////////////////////////////////////////////
+                         EIP-712 TYPE HASHES
+    //////////////////////////////////////////////////////////////*/
+
+    bytes32 public constant APPROVAL_TYPEHASH =
+        keccak256(
+            "Approval(bytes32 requestId,bytes32 lineId,address holder,uint256 deadline)"
+        );
+
+    bytes32 public constant DISPUTE_TYPEHASH =
+        keccak256(
+            "Dispute(bytes32 requestId,bytes32 lineId,address holder,uint256 deadline)"
+        );
 
     /*//////////////////////////////////////////////////////////////
                               STORAGE
     //////////////////////////////////////////////////////////////*/
 
     /**
-     * @notice ID que se asignará a la siguiente solicitud.
-     * @dev Comienza en 1 para reservar 0 como valor nulo.
-     */
-    uint256 public nextRequestId = 1;
-
-    /**
-     * @notice Relaciona un identificador pseudónimo de línea
-     *         con la wallet de su titular.
+     * @notice Identificador pseudónimo de línea => titular.
+     *
+     * @dev No almacenar aquí teléfono, DNI ni otros datos personales.
      */
     mapping(bytes32 => address) public lineHolders;
 
     /**
-     * @notice Almacena las solicitudes por ID.
+     * @notice Resultado final de las solicitudes procesadas.
      */
-    mapping(uint256 => SimRequest) private requests;
+    mapping(bytes32 => SimRequest) private requests;
 
     /**
-     * @notice Solicitud activa de cada línea.
-     *
-     * 0 significa que la línea no tiene una solicitud activa.
+     * @notice Evita que un requestId pueda procesarse más de una vez.
      */
-    mapping(bytes32 => uint256) public activeRequestByLine;
+    mapping(bytes32 => bool) public finalizedRequests;
+
+    /**
+     * @notice Cantidad total de solicitudes finalizadas on-chain.
+     */
+    uint256 public requestCount;
 
     /*//////////////////////////////////////////////////////////////
                                 EVENTS
@@ -90,29 +106,17 @@ contract SIMI is AccessControl {
         address indexed holder
     );
 
-    event RequestCreated(
-        uint256 indexed requestId,
-        bytes32 indexed lineId,
-        address indexed operator,
-        address holder
-    );
-
-    event IdentityVerified(
-        uint256 indexed requestId,
-        address indexed verifier
-    );
-
-    event HolderConfirmed(
-        uint256 indexed requestId,
-        address indexed holder
-    );
-
     event RequestAuthorized(
-        uint256 indexed requestId
+        bytes32 indexed requestId,
+        bytes32 indexed lineId,
+        address indexed holder,
+        address operatorAddress,
+        address verifierAddress
     );
 
     event RequestDisputed(
-        uint256 indexed requestId,
+        bytes32 indexed requestId,
+        bytes32 indexed lineId,
         address indexed holder
     );
 
@@ -120,8 +124,13 @@ contract SIMI is AccessControl {
                               CONSTRUCTOR
     //////////////////////////////////////////////////////////////*/
 
-    constructor() {
-        _grantRole(DEFAULT_ADMIN_ROLE, msg.sender);
+    constructor()
+        EIP712("SIMI", "2")
+    {
+        _grantRole(
+            DEFAULT_ADMIN_ROLE,
+            msg.sender
+        );
     }
 
     /*//////////////////////////////////////////////////////////////
@@ -129,8 +138,11 @@ contract SIMI is AccessControl {
     //////////////////////////////////////////////////////////////*/
 
     /**
-     * @notice Registra una línea pseudónima y la vincula
-     *         con la wallet de su titular.
+     * @notice Registra un identificador pseudónimo de línea
+     *         y lo vincula con el titular correspondiente.
+     *
+     * @dev Es una operación de enrolamiento/configuración.
+     *      No ocurre en cada reposición.
      */
     function registerLine(
         bytes32 lineId,
@@ -163,177 +175,174 @@ contract SIMI is AccessControl {
     }
 
     /*//////////////////////////////////////////////////////////////
-                        REQUEST CREATION
+                      FINAL AUTHORIZATION
     //////////////////////////////////////////////////////////////*/
 
     /**
-     * @notice Crea una solicitud de reemplazo de SIM.
+     * @notice Registra una reposición como autorizada.
      *
-     * @dev Solo puede hacerlo una wallet con OPERATOR_ROLE.
-     *      Una linea no puede tener dos solicitudes activas.
+     * @dev Las tres aprobaciones se realizan off-chain.
+     *      La única escritura blockchain del flujo normal ocurre aquí.
+     *
+     *      Deben existir firmas válidas de:
+     *      - Operadora autorizada
+     *      - Verificador autorizado
+     *      - Titular de la línea
      */
-    function createRequest(
-        bytes32 lineId
+    function authorizeRequest(
+        AuthorizationData calldata data,
+        bytes calldata operatorSignature,
+        bytes calldata verifierSignature,
+        bytes calldata holderSignature
     )
         external
-        onlyRole(OPERATOR_ROLE)
-        returns (uint256)
     {
-        address holder = lineHolders[lineId];
+        require(
+            data.requestId != bytes32(0),
+            "Invalid request ID"
+        );
+
+        require(
+            !finalizedRequests[data.requestId],
+            "Request already finalized"
+        );
+
+        require(
+            block.timestamp <= data.deadline,
+            "Approval expired"
+        );
+
+        address holder =
+            lineHolders[data.lineId];
 
         require(
             holder != address(0),
             "Line not registered"
         );
 
+        bytes32 digest =
+            _getApprovalDigest(
+                data.requestId,
+                data.lineId,
+                holder,
+                data.deadline
+            );
+
+        (
+            address operatorSigner,
+            address verifierSigner
+        ) =
+            _validateAuthorizationSignatures(
+                digest,
+                holder,
+                operatorSignature,
+                verifierSignature,
+                holderSignature
+            );
+
+        _finalizeAuthorization(
+            data.requestId,
+            data.lineId,
+            holder,
+            operatorSigner,
+            verifierSigner
+        );
+    }
+
+    /**
+     * @dev Valida las firmas y devuelve los firmantes
+     *      de operadora y verificador.
+     */
+    function _validateAuthorizationSignatures(
+        bytes32 digest,
+        address holder,
+        bytes calldata operatorSignature,
+        bytes calldata verifierSignature,
+        bytes calldata holderSignature
+    )
+        internal
+        view
+        returns (
+            address operatorSigner,
+            address verifierSigner
+        )
+    {
+        operatorSigner =
+            ECDSA.recover(
+                digest,
+                operatorSignature
+            );
+
         require(
-            activeRequestByLine[lineId] == 0,
-            "Line already has active request"
+            hasRole(
+                OPERATOR_ROLE,
+                operatorSigner
+            ),
+            "Invalid operator signature"
         );
 
-        uint256 requestId = nextRequestId;
+        verifierSigner =
+            ECDSA.recover(
+                digest,
+                verifierSignature
+            );
 
-        nextRequestId++;
+        require(
+            hasRole(
+                VERIFIER_ROLE,
+                verifierSigner
+            ),
+            "Invalid verifier signature"
+        );
 
-        requests[requestId] = SimRequest({
-            id: requestId,
+        address holderSigner =
+            ECDSA.recover(
+                digest,
+                holderSignature
+            );
+
+        require(
+            holderSigner == holder,
+            "Invalid holder signature"
+        );
+    }
+
+    /**
+     * @dev Registra definitivamente una autorización válida.
+     */
+    function _finalizeAuthorization(
+        bytes32 requestId,
+        bytes32 lineId,
+        address holder,
+        address operatorSigner,
+        address verifierSigner
+    )
+        internal
+    {
+        finalizedRequests[
+            requestId
+        ] = true;
+
+        requests[
+            requestId
+        ] = SimRequest({
+            requestId: requestId,
             lineId: lineId,
-            operatorAddress: msg.sender,
+            operatorAddress: operatorSigner,
+            verifierAddress: verifierSigner,
             holder: holder,
-            createdAt: block.timestamp,
-            identityVerified: false,
-            holderConfirmed: false,
-            disputed: false,
-            status: RequestStatus.Created
+            finalizedAt: block.timestamp,
+            status: RequestStatus.Authorized
         });
 
-        activeRequestByLine[lineId] = requestId;
-
-        emit RequestCreated(
-            requestId,
-            lineId,
-            msg.sender,
-            holder
-        );
-
-        return requestId;
-    }
-
-    /*//////////////////////////////////////////////////////////////
-                      IDENTITY VERIFICATION
-    //////////////////////////////////////////////////////////////*/
-
-    /**
-     * @notice Registra que la identidad fue validada
-     *         mediante un proceso externo autorizado.
-     */
-    function verifyIdentity(
-        uint256 requestId
-    )
-        external
-        onlyRole(VERIFIER_ROLE)
-    {
-        SimRequest storage request =
-            requests[requestId];
-
-        require(
-            request.id != 0,
-            "Request does not exist"
-        );
-
-        require(
-            !request.disputed,
-            "Request disputed"
-        );
-
-        require(
-            !request.identityVerified,
-            "Identity already verified"
-        );
-
-        require(
-            request.status == RequestStatus.Created,
-            "Invalid request status"
-        );
-
-        request.identityVerified = true;
-
-        request.status =
-            RequestStatus.IdentityVerified;
-
-        emit IdentityVerified(
-            requestId,
-            msg.sender
-        );
-    }
-
-    /*//////////////////////////////////////////////////////////////
-                        HOLDER CONFIRMATION
-    //////////////////////////////////////////////////////////////*/
-
-    /**
-     * @notice Permite al titular autorizar una solicitud
-     *         cuya identidad ya fue verificada.
-     */
-    function confirmRequest(
-        uint256 requestId
-    )
-        external
-    {
-        SimRequest storage request =
-            requests[requestId];
-
-        require(
-            request.id != 0,
-            "Request does not exist"
-        );
-
-        require(
-            msg.sender == request.holder,
-            "Only holder can confirm"
-        );
-
-        require(
-            !request.disputed,
-            "Request disputed"
-        );
-
-        require(
-            request.identityVerified,
-            "Identity not verified"
-        );
-
-        require(
-            !request.holderConfirmed,
-            "Already confirmed"
-        );
-
-        require(
-            request.status ==
-                RequestStatus.IdentityVerified,
-            "Invalid request status"
-        );
-
-        request.holderConfirmed = true;
-
-        request.status =
-            RequestStatus.Authorized;
-
-        /*
-         * La solicitud termina.
-         * La linea queda disponible para una futura solicitud.
-         */
-        activeRequestByLine[
-            request.lineId
-        ] = 0;
-
-        emit HolderConfirmed(
-            requestId,
-            msg.sender
-        );
+        requestCount++;
 
         emit RequestAuthorized(
-            requestId
+            requestId,
+            lineId,
+            holder,
+            operatorSigner,
+            verifierSigner
         );
     }
 
@@ -342,55 +351,211 @@ contract SIMI is AccessControl {
     //////////////////////////////////////////////////////////////*/
 
     /**
-     * @notice Permite al titular bloquear una solicitud
-     *         que no reconoce.
+     * @notice Registra que el titular NO reconoce la solicitud.
+     *
+     * @dev El titular firma la disputa off-chain.
+     *      Cualquier relayer/backend puede enviar la transacción,
+     *      por lo que el usuario no tiene que pagar gas directamente.
      */
     function disputeRequest(
-        uint256 requestId
+        AuthorizationData calldata data,
+        bytes calldata holderSignature
     )
         external
     {
-        SimRequest storage request =
-            requests[requestId];
-
         require(
-            request.id != 0,
-            "Request does not exist"
+            data.requestId != bytes32(0),
+            "Invalid request ID"
         );
 
         require(
-            msg.sender == request.holder,
-            "Only holder can dispute"
+            !finalizedRequests[data.requestId],
+            "Request already finalized"
         );
 
         require(
-            request.status !=
-                RequestStatus.Authorized,
-            "Already authorized"
+            block.timestamp <= data.deadline,
+            "Dispute expired"
         );
+
+        address holder =
+            lineHolders[data.lineId];
 
         require(
-            !request.disputed,
-            "Already disputed"
+            holder != address(0),
+            "Line not registered"
         );
 
-        request.disputed = true;
+        bytes32 digest =
+            _getDisputeDigest(
+                data.requestId,
+                data.lineId,
+                holder,
+                data.deadline
+            );
 
-        request.status =
-            RequestStatus.Disputed;
+        address holderSigner =
+            ECDSA.recover(
+                digest,
+                holderSignature
+            );
 
-        /*
-         * La solicitud termina,
-         * por lo que se libera la linea.
-         */
-        activeRequestByLine[
-            request.lineId
-        ] = 0;
+        require(
+            holderSigner == holder,
+            "Invalid holder signature"
+        );
+
+        finalizedRequests[
+            data.requestId
+        ] = true;
+
+        requests[
+            data.requestId
+        ] = SimRequest({
+            requestId: data.requestId,
+            lineId: data.lineId,
+            operatorAddress: address(0),
+            verifierAddress: address(0),
+            holder: holder,
+            finalizedAt: block.timestamp,
+            status: RequestStatus.Disputed
+        });
+
+        requestCount++;
 
         emit RequestDisputed(
-            requestId,
-            msg.sender
+            data.requestId,
+            data.lineId,
+            holder
         );
+    }
+
+    /*//////////////////////////////////////////////////////////////
+                         INTERNAL DIGEST HELPERS
+    //////////////////////////////////////////////////////////////*/
+
+    /**
+     * @dev Construye el digest EIP-712 para una autorización.
+     */
+    function _getApprovalDigest(
+        bytes32 requestId,
+        bytes32 lineId,
+        address holder,
+        uint256 deadline
+    )
+        internal
+        view
+        returns (bytes32)
+    {
+        bytes32 structHash =
+            keccak256(
+                abi.encode(
+                    APPROVAL_TYPEHASH,
+                    requestId,
+                    lineId,
+                    holder,
+                    deadline
+                )
+            );
+
+        return
+            _hashTypedDataV4(
+                structHash
+            );
+    }
+
+    /**
+     * @dev Construye el digest EIP-712 para una disputa.
+     */
+    function _getDisputeDigest(
+        bytes32 requestId,
+        bytes32 lineId,
+        address holder,
+        uint256 deadline
+    )
+        internal
+        view
+        returns (bytes32)
+    {
+        bytes32 structHash =
+            keccak256(
+                abi.encode(
+                    DISPUTE_TYPEHASH,
+                    requestId,
+                    lineId,
+                    holder,
+                    deadline
+                )
+            );
+
+        return
+            _hashTypedDataV4(
+                structHash
+            );
+    }
+
+    /*//////////////////////////////////////////////////////////////
+                         PUBLIC DIGEST HELPERS
+    //////////////////////////////////////////////////////////////*/
+
+    /**
+     * @notice Devuelve el digest que operadora, verificador
+     *         y titular deben firmar para autorizar.
+     */
+    function getApprovalDigest(
+        bytes32 requestId,
+        bytes32 lineId,
+        uint256 deadline
+    )
+        external
+        view
+        returns (bytes32)
+    {
+        address holder =
+            lineHolders[lineId];
+
+        require(
+            holder != address(0),
+            "Line not registered"
+        );
+
+        return
+            _getApprovalDigest(
+                requestId,
+                lineId,
+                holder,
+                deadline
+            );
+    }
+
+    /**
+     * @notice Devuelve el digest que el titular debe firmar
+     *         para disputar una solicitud.
+     */
+    function getDisputeDigest(
+        bytes32 requestId,
+        bytes32 lineId,
+        uint256 deadline
+    )
+        external
+        view
+        returns (bytes32)
+    {
+        address holder =
+            lineHolders[lineId];
+
+        require(
+            holder != address(0),
+            "Line not registered"
+        );
+
+        return
+            _getDisputeDigest(
+                requestId,
+                lineId,
+                holder,
+                deadline
+            );
     }
 
     /*//////////////////////////////////////////////////////////////
@@ -398,35 +563,33 @@ contract SIMI is AccessControl {
     //////////////////////////////////////////////////////////////*/
 
     /**
-     * @notice Obtiene toda la información blockchain
-     *         de una solicitud.
+     * @notice Obtiene el resultado blockchain de una solicitud.
      */
     function getRequest(
-        uint256 requestId
+        bytes32 requestId
     )
         external
         view
         returns (SimRequest memory)
     {
-        SimRequest memory request =
-            requests[requestId];
-
         require(
-            request.id != 0,
+            finalizedRequests[requestId],
             "Request does not exist"
         );
 
-        return request;
+        return
+            requests[requestId];
     }
 
     /**
-     * @notice Devuelve la cantidad total de solicitudes creadas.
+     * @notice Devuelve la cantidad total de solicitudes
+     *         finalizadas on-chain.
      */
     function getRequestCount()
         external
         view
         returns (uint256)
     {
-        return nextRequestId - 1;
+        return requestCount;
     }
 }

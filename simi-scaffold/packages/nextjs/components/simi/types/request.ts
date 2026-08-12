@@ -1,28 +1,42 @@
 export type RequestStatus =
-  | "Created"
-  | "IdentityVerified"
+  | "PendingVerification"
+  | "PendingHolder"
+  | "ReadyToAuthorize"
+  | "ReadyToDispute"
   | "Authorized"
   | "Disputed";
 
-export type Role = "Operator" | "Verifier" | "Holder" | null;
+export type Role =
+  | "Operator"
+  | "Verifier"
+  | "Holder"
+  | null;
 
-export interface SimRequest {
-  id: number;
-  lineId: string;
-  operator: string;
-  holder: string;
-  createdAt: string;
-  identityVerified: boolean;
-  holderConfirmed: boolean;
-  disputed: boolean;
-  status: RequestStatus;
-}
-
-export type StepState = "completed" | "current" | "pending";
+export type TimelineStepState =
+  | "completed"
+  | "current"
+  | "pending"
+  | "disputed";
 
 export interface TimelineStep {
   label: string;
-  state: StepState;
+  description?: string;
+  state: TimelineStepState;
+}
+
+export interface SimRequest {
+  requestId: `0x${string}`;
+  lineId: `0x${string}`;
+  holder: string;
+  createdAt: string;
+  deadline: bigint;
+
+  operatorSignature?: `0x${string}`;
+  verifierSignature?: `0x${string}`;
+  holderSignature?: `0x${string}`;
+
+  status: RequestStatus;
+  alertSent?: boolean;
 }
 
 export interface CreateRequestInput {

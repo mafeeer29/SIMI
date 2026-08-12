@@ -52,13 +52,13 @@ export function SimiLanding() {
           </div>
 
           <h1 className="text-4xl font-bold leading-[1.08] tracking-tight text-white text-balance sm:text-5xl lg:text-6xl">
-            Reposiciones de SIM <span className="brand-text">verificables</span> y a prueba de fraude
+            Reposiciones de SIM con autorización verificable
           </h1>
 
           <p className="mt-5 max-w-xl text-pretty text-base leading-relaxed text-navy-200 sm:text-lg">
-            SIMI añade una capa de autorización y auditoría on-chain al proceso de reposición de
-            SIM. Cada cambio requiere el consentimiento del operador, el verificador y el titular
-            de la línea.
+            SIMI coordina a la operadora, al verificador y al titular para que solo el resultado
+            final quede registrado en Arbitrum. Las validaciones intermedias se firman fuera de
+            la cadena como evidencia verificable.
           </p>
 
           <div className="mt-8 flex flex-col gap-4 sm:flex-row sm:items-center">
@@ -74,18 +74,22 @@ export function SimiLanding() {
             </span>
           </div>
 
-          <dl className="mt-10 grid max-w-md grid-cols-3 gap-4">
-            {[
-              { k: "3", v: "Roles on-chain" },
-              { k: "4", v: "Estados verificables" },
-              { k: "100%", v: "Trazable" },
-            ].map((s) => (
-              <div key={s.v}>
-                <dt className="text-2xl font-bold text-white sm:text-3xl">{s.k}</dt>
-                <dd className="mt-1 text-xs leading-snug text-navy-400">{s.v}</dd>
-              </div>
-            ))}
-          </dl>
+          <div className="mt-10 grid max-w-md grid-cols-3 gap-4">
+            <div className="text-center">
+              <dt className="text-2xl font-bold text-white sm:text-3xl">3</dt>
+              <dd className="mt-1 text-xs leading-snug text-navy-400">Actores: Operadora, Verificador, Titular</dd>
+            </div>
+
+            <div className="text-center">
+              <dt className="text-2xl font-bold text-white sm:text-3xl">1</dt>
+              <dd className="mt-1 text-xs leading-snug text-navy-400">Transacción final en Arbitrum</dd>
+            </div>
+
+            <div className="text-center">
+              <dt className="text-2xl font-bold text-white sm:text-3xl">Evidencia</dt>
+              <dd className="mt-1 text-xs leading-snug text-navy-400">Firmas y registros verificables fuera de-chain</dd>
+            </div>
+          </div>
         </div>
 
         <div className="relative animate-scale-in">
@@ -97,16 +101,26 @@ export function SimiLanding() {
           />
         </div>
       </section>
+      {/* Privacy */}
+      <section className="mt-8">
+        <div className="mx-auto max-w-3xl">
+          <div className="rounded-2xl border border-white/6 bg-navy-900/40 p-4 text-sm text-navy-300">
+            <strong className="text-white">Privacidad:</strong>
+            <p className="mt-1">SIMI no almacena DNI, biometría, documentos ni números telefónicos en blockchain.</p>
+          </div>
+        </div>
+      </section>
 
       {/* Flow */}
       <section className="mt-16 sm:mt-24">
         <div className="mb-8 max-w-2xl">
           <p className="eyebrow mb-2">El flujo</p>
           <h2 className="text-2xl font-bold text-white text-balance sm:text-3xl">
-            Cuatro pasos, una sola verdad on-chain
+            Operadora → Verificador → Titular → Resultado final en Arbitrum
           </h2>
           <p className="mt-2 text-pretty text-navy-300">
-            Ninguna SIM se reemplaza sin que todas las partes coincidan.
+            Las validaciones y evidencias se realizan fuera de la cadena; solo el resultado
+            final se registra en Arbitrum.
           </p>
         </div>
 

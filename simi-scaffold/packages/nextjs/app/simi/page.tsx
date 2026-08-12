@@ -782,95 +782,99 @@ function OperatorView({
       </div>
 
       <div className="space-y-4">
-        {requests.map(
-          (request: SimRequest) => (
-            <div
-              key={
-                request.requestId
-              }
-              className="card p-5"
-            >
-              <div className="flex flex-col justify-between gap-4 md:flex-row md:items-center">
-                <div>
-                  <p className="font-mono text-xs text-navy-400">
-                    {short(
-                      request.requestId,
-                    )}
-                  </p>
+        {requests.map((request: SimRequest) => (
+          <div key={request.requestId} className="card p-5">
+            <div className="md:flex md:items-start md:justify-between">
+              <div className="flex-1">
+                <p className="font-mono text-xs text-navy-400">{short(request.requestId)}</p>
 
-                  <p className="mt-2 font-semibold text-white">
-                    {statusText(
-                      request.status,
-                    )}
-                  </p>
-
-                  <p className="mt-1 text-sm text-navy-400">
-                    Titular:{" "}
-                    {short(
-                      request.holder,
-                    )}
-                  </p>
+                <div className="mt-2 flex items-center gap-3">
+                  <h3 className="text-lg font-semibold text-white">{statusText(request.status)}</h3>
+                  <span className="ml-2 inline-flex items-center rounded-full bg-navy-900/50 px-2 py-0.5 text-xs text-navy-200">{new Date(request.createdAt).toLocaleString()}</span>
                 </div>
 
-                <div className="flex flex-wrap gap-2">
-                  {!request.alertSent &&
-                  request.status === "PendingHolder" && (
-                    <Button
-                      size="sm"
-                      disabled={loading === request.requestId}
-                      onClick={() => sendAlert(request)}
-                    >
-                      <Bell className="h-4 w-4" />
-                      {loading === request.requestId
-                        ? "Enviando..."
-                        : "Enviar alerta"}
-                    </Button>
-                  )}
+                <p className="mt-2 text-sm text-navy-300">Titular: {short(request.holder)}</p>
 
-                  {request.status ===
-                    "ReadyToAuthorize" && (
-                    <Button
-                      size="sm"
-                      variant="success"
-                      disabled={
-                        loading ===
-                        request.requestId
-                      }
-                      onClick={() =>
-                        finalizeAuthorization(
-                          request,
-                        )
-                      }
-                    >
-                      <CheckCircle2 className="h-4 w-4" />
-                      Registrar autorización
-                    </Button>
-                  )}
+                <div className="mt-4 grid grid-cols-3 gap-2 text-xs">
+                  <div className="rounded-md border border-white/6 bg-navy-900/40 px-2 py-1 text-navy-200">
+                    <div className="font-semibold text-white">Canal</div>
+                    <div className="mt-1">Centro de atención</div>
+                  </div>
 
-                  {request.status ===
-                    "ReadyToDispute" && (
-                    <Button
-                      size="sm"
-                      variant="danger"
-                      disabled={
-                        loading ===
-                        request.requestId
-                      }
-                      onClick={() =>
-                        finalizeDispute(
-                          request,
-                        )
-                      }
-                    >
-                      <ShieldAlert className="h-4 w-4" />
-                      Bloquear reposición
-                    </Button>
-                  )}
+                  <div className="rounded-md border border-white/6 bg-navy-900/40 px-2 py-1 text-navy-200">
+                    <div className="font-semibold text-white">Ubicación</div>
+                    <div className="mt-1">San Isidro, Lima</div>
+                  </div>
+
+                  <div className="rounded-md border border-white/6 bg-navy-900/40 px-2 py-1 text-navy-200">
+                    <div className="font-semibold text-white">Nivel de riesgo</div>
+                    <div className="mt-1">Medio</div>
+                  </div>
+                </div>
+
+                <div className="mt-4">
+                  {/* Mini timeline */}
+                  <div className="flex items-center gap-3 text-xs text-navy-400">
+                    {(() => {
+                      const steps = [
+                        { key: 'Solicitud creada' },
+                        { key: 'Identidad validada' },
+                        { key: 'Titular notificado' },
+                        { key: 'Titular responde' },
+                        { key: 'Resultado registrado' },
+                      ];
+
+                      const order: SimRequest['status'][] = [
+                        'PendingVerification',
+                        'PendingHolder',
+                        'ReadyToAuthorize',
+                        'ReadyToDispute',
+                        'Authorized',
+                      ];
+
+                      const current = Math.max(0, order.indexOf(request.status));
+
+                      return (
+                        <div className="flex w-full items-center gap-2">
+                          {steps.map((s, i) => (
+                            <div key={s.key} className="flex items-center gap-2">
+                              <div className={`h-2 w-2 rounded-full ${i <= current ? 'bg-sky-400' : 'bg-navy-800 border border-white/6'}`}></div>
+                              <div className={`hidden truncate text-xs ${i <= current ? 'text-navy-200' : 'text-navy-500'} sm:block`}>{s.key}</div>
+                              {i < steps.length - 1 && <div className={`ml-2 h-[2px] w-8 ${i < current ? 'bg-sky-400' : 'bg-white/6'}`}></div>}
+                            </div>
+                          ))}
+                        </div>
+                      );
+                    })()}
+                  </div>
                 </div>
               </div>
+
+              <div className="mt-4 flex shrink-0 flex-wrap gap-2 md:mt-0 md:ml-6">
+                {!request.alertSent && request.status === 'PendingHolder' && (
+                  <Button size="sm" disabled={loading === request.requestId} onClick={() => sendAlert(request)}>
+                    <Bell className="h-4 w-4" />
+                    {loading === request.requestId ? 'Enviando...' : 'Enviar alerta'}
+                  </Button>
+                )}
+
+                {request.status === 'ReadyToAuthorize' && (
+                  <Button size="sm" variant="success" disabled={loading === request.requestId} onClick={() => finalizeAuthorization(request)}>
+                    <CheckCircle2 className="h-4 w-4" />
+                    Registrar autorización
+                  </Button>
+                )}
+
+                {request.status === 'ReadyToDispute' && (
+                  <Button size="sm" variant="danger" disabled={loading === request.requestId} onClick={() => finalizeDispute(request)}>
+                    <ShieldAlert className="h-4 w-4" />
+                    Bloquear reposición
+                  </Button>
+                )}
+              </div>
             </div>
-          ),
-        )}
+          </div>
+        ))}
 
         {requests.length === 0 && (
           <EmptyText text="Todavía no hay solicitudes." />
@@ -989,43 +993,35 @@ function VerifierView({
       />
 
       <div className="space-y-4">
-        {pending.map(
-          (request: SimRequest) => (
-            <div
-              key={
-                request.requestId
-              }
-              className="card p-6"
-            >
-              <p className="font-mono text-xs text-navy-400">
-                {short(
-                  request.requestId,
-                )}
-              </p>
+        {pending.map((request: SimRequest) => (
+          <div key={request.requestId} className="card p-6">
+            <p className="font-mono text-xs text-navy-400">{short(request.requestId)}</p>
 
-              <h2 className="mt-2 font-semibold text-white">
-                Solicitud pendiente
-              </h2>
+            <div className="mt-2 flex items-center justify-between">
+              <div>
+                <h2 className="font-semibold text-white">Solicitud pendiente</h2>
+                <p className="mt-1 text-sm text-navy-300">Titular: {short(request.holder)}</p>
+                <p className="mt-1 text-xs text-navy-500">{new Date(request.createdAt).toLocaleString()}</p>
+                <div className="mt-2 text-xs text-navy-400">Canal: Centro de atención · Ubicación: San Isidro, Lima</div>
+              </div>
 
-              <Button
-                className="mt-5"
-                disabled={
-                  loading ===
-                  request.requestId
-                }
-                onClick={() =>
-                  onVerify(request)
-                }
-              >
-                <ShieldCheck className="h-4 w-4" />
-                Firmar validación
-              </Button>
+              <div className="ml-4 flex shrink-0 items-center gap-2">
+                <div className="rounded-full bg-navy-900/40 px-3 py-1 text-xs text-navy-200">{statusText(request.status)}</div>
+
+                <Button className="ml-3" disabled={loading === request.requestId} onClick={() => onVerify(request)}>
+                  <ShieldCheck className="h-4 w-4" />
+                  Firmar validación
+                </Button>
+              </div>
             </div>
-          ),
-        )}
+          </div>
+        ))}
 
         {pending.length === 0 && (
-          <EmptyText text="No hay solicitudes pendientes de validación." />
+          <div className="card py-12 text-center">
+            <h3 className="text-lg font-semibold text-white">No hay validaciones pendientes</h3>
+            <p className="mt-2 text-navy-300">Todas las solicitudes han sido procesadas. Cuando una nueva reposición requiera validación, aparecerá aquí.</p>
+          </div>
         )}
       </div>
     </div>
@@ -1044,130 +1040,96 @@ function HolderView({
 }: any) {
   return (
     <div className="mx-auto max-w-3xl px-4 py-8">
-      <Header
-        icon={UserCheck}
-        eyebrow="Seguridad de tu línea"
-        title="Tu línea está protegida"
-        description="Confirma únicamente operaciones que tú hayas solicitado."
-      />
+      <div className="mb-6 flex items-center justify-between gap-4">
+        <Header
+          icon={UserCheck}
+          eyebrow="Seguridad de tu línea"
+          title="Tu línea está protegida"
+          description="Confirma únicamente operaciones que tú hayas solicitado."
+        />
+
+        <div className="rounded-2xl border border-white/6 bg-navy-900/40 px-4 py-3 text-center">
+          <div className="text-sm text-navy-300">Estado de tu línea</div>
+          <div className="mt-1 text-lg font-semibold text-white">Protegida</div>
+        </div>
+      </div>
 
       <div className="space-y-5">
         {requests.map(
           (request: SimRequest) => (
-            <div
-              key={
-                request.requestId
-              }
-              className="card p-6 sm:p-8"
-            >
-              <div className="text-center">
-                <ShieldAlert className="mx-auto h-12 w-12 text-amber-300" />
+            <div key={request.requestId} className="card p-6 sm:p-8">
+              <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
+                <div>
+                  <div className="flex items-center gap-3 text-center sm:text-left">
+                    <ShieldAlert className="h-12 w-12 text-amber-300" />
 
-                <h2 className="mt-4 text-2xl font-bold text-white">
-                  Solicitud de reposición de SIM
-                </h2>
-
-                <p className="mt-2 text-navy-300">
-                  Se ha solicitado
-                  reemplazar tu SIM.
-                </p>
-              </div>
-
-              <div className="mt-6 rounded-2xl border border-white/10 bg-navy-950/50 p-4">
-                <p className="text-xs text-navy-500">
-                  Fecha
-                </p>
-
-                <p className="mt-1 text-white">
-                  {new Date(
-                    request.createdAt,
-                  ).toLocaleString()}
-                </p>
-
-                <p className="mt-4 text-xs text-navy-500">
-                  Estado
-                </p>
-
-                <p className="mt-1 font-semibold text-white">
-                  {statusText(
-                    request.status,
-                  )}
-                </p>
-              </div>
-
-              {request.status ===
-                "PendingHolder" && (
-                <>
-                  <p className="mt-6 text-center text-lg font-semibold text-white">
-                    ¿Reconoces esta solicitud?
-                  </p>
-
-                  <div className="mt-4 flex flex-col gap-3 sm:flex-row">
-                    <Button
-                      className="flex-1"
-                      variant="success"
-                      disabled={
-                        loading ===
-                        request.requestId
-                      }
-                      onClick={() =>
-                        onConfirm(
-                          request,
-                        )
-                      }
-                    >
-                      <CheckCircle2 className="h-5 w-5" />
-                      Sí, fui yo
-                    </Button>
-
-                    <Button
-                      className="flex-1"
-                      variant="danger"
-                      disabled={
-                        loading ===
-                        request.requestId
-                      }
-                      onClick={() =>
-                        onDispute(
-                          request,
-                        )
-                      }
-                    >
-                      <XCircle className="h-5 w-5" />
-                      No fui yo
-                    </Button>
+                    <div>
+                      <h2 className="text-lg font-bold text-white">Solicitud de reposición de SIM</h2>
+                      <p className="mt-1 text-sm text-navy-300">Se ha solicitado reemplazar tu SIM.</p>
+                    </div>
                   </div>
-                </>
-              )}
 
-              {request.status ===
-                "PendingVerification" && (
-                <div className="mt-6 flex items-center gap-3 rounded-2xl bg-amber-500/10 p-4 text-amber-200">
-                  <Clock className="h-5 w-5" />
-                  La operadora está validando la solicitud.
+                  <div className="mt-4 grid grid-cols-3 gap-3 text-xs">
+                    <div className="rounded-md border border-white/6 bg-navy-900/40 px-2 py-1 text-navy-200">
+                      <div className="font-semibold text-white">Fecha</div>
+                      <div className="mt-1">{new Date(request.createdAt).toLocaleString()}</div>
+                    </div>
+
+                    <div className="rounded-md border border-white/6 bg-navy-900/40 px-2 py-1 text-navy-200">
+                      <div className="font-semibold text-white">Canal</div>
+                      <div className="mt-1">Centro de atención</div>
+                    </div>
+
+                    <div className="rounded-md border border-white/6 bg-navy-900/40 px-2 py-1 text-navy-200">
+                      <div className="font-semibold text-white">Ubicación</div>
+                      <div className="mt-1">San Isidro, Lima</div>
+                    </div>
+                  </div>
+
+                  <div className="mt-4">
+                    <div className="text-xs text-navy-500">Estado</div>
+                    <div className="mt-1 font-semibold text-white">{statusText(request.status)}</div>
+                  </div>
                 </div>
-              )}
 
-              {request.status ===
-                "ReadyToAuthorize" && (
+                <div className="mt-3 flex w-full gap-3 sm:mt-0 sm:w-auto">
+                  {request.status === 'PendingHolder' && (
+                    <>
+                      <Button className="flex-1 text-lg" variant="success" disabled={loading === request.requestId} onClick={() => onConfirm(request)}>
+                        <CheckCircle2 className="h-5 w-5" />
+                        Sí, fui yo
+                      </Button>
+
+                      <Button className="flex-1 text-lg" variant="danger" disabled={loading === request.requestId} onClick={() => onDispute(request)}>
+                        <XCircle className="h-5 w-5" />
+                        No fui yo
+                      </Button>
+                    </>
+                  )}
+
+                  {request.status === 'PendingVerification' && (
+                    <div className="mt-2 flex items-center gap-3 rounded-2xl bg-amber-500/10 p-4 text-amber-200">
+                      <Clock className="h-5 w-5" />
+                      La operadora está validando la solicitud.
+                    </div>
+                  )}
+                </div>
+              </div>
+
+              {request.status === 'ReadyToAuthorize' && (
                 <SuccessText text="Confirmaste esta solicitud. La operadora registrará la autorización final." />
               )}
 
-              {request.status ===
-                "ReadyToDispute" && (
+              {request.status === 'ReadyToDispute' && (
                 <SuccessText text="Reportaste esta solicitud. SIMI notificará a la operadora para bloquearla." />
               )}
 
-              {request.status ===
-                "Authorized" && (
+              {request.status === 'Authorized' && (
                 <SuccessText text="Reposición autorizada y registrada." />
               )}
 
-              {request.status ===
-                "Disputed" && (
-                <div className="mt-6 rounded-2xl border border-rose-500/20 bg-rose-500/10 p-4 text-center text-rose-200">
-                  Reposición bloqueada.
-                </div>
+              {request.status === 'Disputed' && (
+                <div className="mt-6 rounded-2xl border border-rose-500/20 bg-rose-500/10 p-4 text-center text-rose-200">Reposición bloqueada.</div>
               )}
             </div>
           ),

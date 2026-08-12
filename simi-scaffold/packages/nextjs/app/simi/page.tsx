@@ -596,8 +596,27 @@ export default function SimiPage() {
   ============================================================ */
 
   async function sendAlert(
-    request: SimRequest,
-  ) {
+  request: SimRequest,
+) {
+  try {
+    setLoading(request.requestId);
+
+    const response = await fetch(
+      "/api/send-whatsapp",
+      {
+        method: "POST",
+      },
+    );
+
+    const data = await response.json();
+
+    if (!response.ok || !data.success) {
+      throw new Error(
+        data.error ||
+          "No se pudo enviar el WhatsApp",
+      );
+    }
+
     await updateSimiRequest(
       request.requestId,
       {
@@ -606,9 +625,21 @@ export default function SimiPage() {
     );
 
     alert(
-      "✅ Alerta enviada al titular.\n\nEn la siguiente etapa este evento se conectará con WhatsApp/SMS.",
+      "✅ Alerta enviada por WhatsApp al titular.",
     );
+  } catch (error) {
+    console.error(
+      "Error enviando alerta:",
+      error,
+    );
+
+    alert(
+      "No se pudo enviar la alerta por WhatsApp.",
+    );
+  } finally {
+    setLoading(null);
   }
+}
 
   /* ============================================================
      UI
@@ -786,10 +817,13 @@ function OperatorView({
                   request.status === "PendingHolder" && (
                     <Button
                       size="sm"
+                      disabled={loading === request.requestId}
                       onClick={() => sendAlert(request)}
                     >
                       <Bell className="h-4 w-4" />
-                      Enviar alerta
+                      {loading === request.requestId
+                        ? "Enviando..."
+                        : "Enviar alerta"}
                     </Button>
                   )}
 

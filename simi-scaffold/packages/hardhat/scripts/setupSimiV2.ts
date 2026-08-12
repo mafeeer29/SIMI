@@ -10,13 +10,13 @@ const SIMI_ADDRESS =
 // ======================================================
 
 const OPERATOR_ADDRESS =
-  "0xTU_WALLET_OPERADORA";
+  "0xBC84Ba1a7B724557aDbA925EE6CBeC7Fb33A79e9";
 
 const VERIFIER_ADDRESS =
-  "0xTU_WALLET_VERIFICADOR";
+  "0xc8611A041D3B6c1FcD1a0348BE3b27665406B559";
 
 const HOLDER_ADDRESS =
-  "0xTU_WALLET_TITULAR";
+  "0x081ce6C5254662B1EC61AB7fa1fEdE6588624A31";
 
 // Usaremos esta misma línea para el demo.
 // Es la que ya venías utilizando anteriormente.
